@@ -1,6 +1,7 @@
 /*
     Refat: 
         -it must be a simpler way of describing the king's moves
+        -the sequence of columns/rows arguments is a mess, need to normalize 
 */
 
 enum Colors{
@@ -38,17 +39,52 @@ abstract class Piece{
     abstract legalMoves(square:Squares): [number, number][];
 }
 
-/*
 class Pawn extends Piece{
-    constructor(color: Colors){
-    super(color);}
-    
-    legalMoves(square:Squares): [number, number][] {
-        let legalSquares: [number, number][];
-        return legalSquares;
-    }    
-}
+    constructor(color: Colors){        
+        super(color);}
+        
+        static legalMoves(square:Squares): [number , number][] {
+            let legalSquares: [number , number][] = [] ;
+            
+            let colorPiece = square.piece?.color;
+            let column = square.column;
+            let row = square.row;
+            
+            if(colorPiece == Colors.white){
+                
+                if (row == 1){
+                    legalSquares.push([row+1, column]);
+                    legalSquares.push([row+2, column]);
+                }
 
+                else{
+                    isInsideBoard(column, row + 1)? legalSquares.push([row+1, column]) : undefined;
+                }
+                
+            }
+            
+            if(colorPiece == Colors.black){
+                
+                if (row == 6){
+                    legalSquares.push([row - 1, column]);
+                    legalSquares.push([row - 2, column]);
+                }
+
+                else{
+                    isInsideBoard(column, row - 1)? legalSquares.push([row - 1, column]) : undefined;
+                }
+
+            }
+            console.log(legalSquares);
+            return legalSquares;
+        }
+        
+        legalMoves(square:Squares):[number, number][] {         
+            return Pawn.legalMoves(square);
+       }
+    }
+    
+/*
 class Knight extends Piece{
     constructor(color: Colors){
     super(color);}
@@ -141,10 +177,8 @@ class King extends Piece{
         possibleColumn = column - 1;
         possibleRow = row + 1;
         isInsideBoard(possibleColumn, possibleRow)? legalSquares.push(
-            [possibleColumn, possibleRow]): undefined;            
+            [possibleColumn, possibleRow]): undefined;    
             
-        console.log(legalSquares);
-
         return legalSquares;
     }
     
@@ -199,9 +233,9 @@ initializePieces();
 
 function initializePieces(){
     
-    let whiteKing = new King(Colors.white);
-    tableState[3][3].createPiece(whiteKing);
-    King.legalMoves(tableState[3][3]);
+    let blackPawn = new Pawn(Colors.black);
+    tableState[0][0].createPiece(blackPawn);
+    Pawn.legalMoves(tableState[0][0]); //just testing, this command will be handled in other way
 }
 
 /*
