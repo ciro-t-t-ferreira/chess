@@ -53,12 +53,12 @@ class Pawn extends Piece{
             if(colorPiece == Colors.white){
                 
                 if (row == 1){
-                    legalSquares.push([row+1, column]);
-                    legalSquares.push([row+2, column]);
+                    legalSquares.push([column, row + 1]);
+                    legalSquares.push([column, row + 2]);
                 }
 
                 else{
-                    isInsideBoard(column, row + 1)? legalSquares.push([row+1, column]) : undefined;
+                    isInsideBoard(column, row + 1)? legalSquares.push([column, row + 1]) : undefined;
                 }
                 
             }
