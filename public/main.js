@@ -1,71 +1,4 @@
 "use strict";
-var Squares;
-(function (Squares) {
-    Squares[Squares["a1"] = 0] = "a1";
-    Squares[Squares["a2"] = 1] = "a2";
-    Squares[Squares["a3"] = 2] = "a3";
-    Squares[Squares["a4"] = 3] = "a4";
-    Squares[Squares["a5"] = 4] = "a5";
-    Squares[Squares["a6"] = 5] = "a6";
-    Squares[Squares["a7"] = 6] = "a7";
-    Squares[Squares["a8"] = 7] = "a8";
-    Squares[Squares["b1"] = 8] = "b1";
-    Squares[Squares["b2"] = 9] = "b2";
-    Squares[Squares["b3"] = 10] = "b3";
-    Squares[Squares["b4"] = 11] = "b4";
-    Squares[Squares["b5"] = 12] = "b5";
-    Squares[Squares["b6"] = 13] = "b6";
-    Squares[Squares["b7"] = 14] = "b7";
-    Squares[Squares["b8"] = 15] = "b8";
-    Squares[Squares["c1"] = 16] = "c1";
-    Squares[Squares["c2"] = 17] = "c2";
-    Squares[Squares["c3"] = 18] = "c3";
-    Squares[Squares["c4"] = 19] = "c4";
-    Squares[Squares["c5"] = 20] = "c5";
-    Squares[Squares["c6"] = 21] = "c6";
-    Squares[Squares["c7"] = 22] = "c7";
-    Squares[Squares["c8"] = 23] = "c8";
-    Squares[Squares["d1"] = 24] = "d1";
-    Squares[Squares["d2"] = 25] = "d2";
-    Squares[Squares["d3"] = 26] = "d3";
-    Squares[Squares["d4"] = 27] = "d4";
-    Squares[Squares["d5"] = 28] = "d5";
-    Squares[Squares["d6"] = 29] = "d6";
-    Squares[Squares["d7"] = 30] = "d7";
-    Squares[Squares["d8"] = 31] = "d8";
-    Squares[Squares["e1"] = 32] = "e1";
-    Squares[Squares["e2"] = 33] = "e2";
-    Squares[Squares["e3"] = 34] = "e3";
-    Squares[Squares["e4"] = 35] = "e4";
-    Squares[Squares["e5"] = 36] = "e5";
-    Squares[Squares["e6"] = 37] = "e6";
-    Squares[Squares["e7"] = 38] = "e7";
-    Squares[Squares["e8"] = 39] = "e8";
-    Squares[Squares["f1"] = 40] = "f1";
-    Squares[Squares["f2"] = 41] = "f2";
-    Squares[Squares["f3"] = 42] = "f3";
-    Squares[Squares["f4"] = 43] = "f4";
-    Squares[Squares["f5"] = 44] = "f5";
-    Squares[Squares["f6"] = 45] = "f6";
-    Squares[Squares["f7"] = 46] = "f7";
-    Squares[Squares["f8"] = 47] = "f8";
-    Squares[Squares["g1"] = 48] = "g1";
-    Squares[Squares["g2"] = 49] = "g2";
-    Squares[Squares["g3"] = 50] = "g3";
-    Squares[Squares["g4"] = 51] = "g4";
-    Squares[Squares["g5"] = 52] = "g5";
-    Squares[Squares["g6"] = 53] = "g6";
-    Squares[Squares["g7"] = 54] = "g7";
-    Squares[Squares["g8"] = 55] = "g8";
-    Squares[Squares["h1"] = 56] = "h1";
-    Squares[Squares["h2"] = 57] = "h2";
-    Squares[Squares["h3"] = 58] = "h3";
-    Squares[Squares["h4"] = 59] = "h4";
-    Squares[Squares["h5"] = 60] = "h5";
-    Squares[Squares["h6"] = 61] = "h6";
-    Squares[Squares["h7"] = 62] = "h7";
-    Squares[Squares["h8"] = 63] = "h8";
-})(Squares || (Squares = {}));
 var Colors;
 (function (Colors) {
     Colors[Colors["white"] = 0] = "white";
@@ -80,28 +13,138 @@ var Kinds;
     Kinds[Kinds["queen"] = 4] = "queen";
     Kinds[Kinds["king"] = 5] = "king";
 })(Kinds || (Kinds = {}));
+class Squares {
+    constructor(column, row) {
+        this.column = column;
+        this.row = row;
+        this.piece = null;
+        console.log(this.column.toString() + this.row.toString());
+    }
+}
 class Piece {
     constructor(squareId, color, kind) {
         this.squareId = squareId;
         this.color = color;
         this.kind = kind;
-        putPieceInSquare(this.squareId, this.color, this.kind);
     }
 }
-function putPieceInSquare(squareId, color, kind) {
-    let square = document.getElementById(squareId.toString());
-    let imageSource = createImageURL(color, kind);
+//Responsible for verifying if there is a Piece in the square to be moved,
+//and for making sure that a piece will disapear in a square and apear in another
+function movePiece(piece, fromSquare, toSquare) {
+    if (fromSquare.piece == piece) {
+        fromSquare.piece = null;
+        toSquare.piece == piece;
+    }
+    else {
+        throw new Error("Specified piece not found in Square");
+    }
+}
+/*let squareA1, squareA2, squareA3, squareA4, squareA5, squareA6, squareA7, squareA8: Squares;
+let squareB1, squareB2, squareB3, squareB4, squareB5, squareB6, squareB7, squareB8: Squares;
+let squareC1, squareC2, squareC3, squareC4, squareC5, squareC6, squareC7, squareC8: Squares;
+let squareD1, squareD2, squareD3, squareD4, squareD5, squareD6, squareD7, squareD8: Squares;
+let squareE1, squareE2, squareE3, squareE4, squareE5, squareE6, squareE7, squareE8: Squares;
+let squareF1, squareF2, squareF3, squareF4, squareF5, squareF6, squareF7, squareF8: Squares;
+let squareG1, squareG2, squareG3, squareG4, squareG5, squareG6, squareG7, squareG8: Squares;
+let squareH1, squareH2, squareH3, squareH4, squareH5, squareH6, squareH7, squareH8: Squares;*/
+let tableState = [];
+initializeEmptyBoard();
+function initializeEmptyBoard() {
+    for (let i = 0; i < 8; i++) {
+        tableState[i] = [];
+        for (let j = 0; j < 8; j++) {
+            tableState[i][j] = new Squares(i, j);
+        }
+    }
+}
+/*function initializeEmptyBoard(){
+    squareA1 = new Squares(Columns.A, Rows.r1);
+    squareA2 = new Squares(Columns.A, Rows.r2);
+    squareA3 = new Squares(Columns.A, Rows.r3);
+    squareA4 = new Squares(Columns.A, Rows.r4);
+    squareA5 = new Squares(Columns.A, Rows.r5);
+    squareA6 = new Squares(Columns.A, Rows.r6);
+    squareA7 = new Squares(Columns.A, Rows.r7);
+    squareA8 = new Squares(Columns.A, Rows.r8);
+
+    squareB1 = new Squares(Columns.B, Rows.r1);
+    squareB2 = new Squares(Columns.B, Rows.r2);
+    squareB3 = new Squares(Columns.B, Rows.r3);
+    squareB4 = new Squares(Columns.B, Rows.r4);
+    squareB5 = new Squares(Columns.B, Rows.r5);
+    squareB6 = new Squares(Columns.B, Rows.r6);
+    squareB7 = new Squares(Columns.B, Rows.r7);
+    squareB8 = new Squares(Columns.B, Rows.r8);
+
+    squareC1 = new Squares(Columns.C, Rows.r1);
+    squareC2 = new Squares(Columns.C, Rows.r2);
+    squareC3 = new Squares(Columns.C, Rows.r3);
+    squareC4 = new Squares(Columns.C, Rows.r4);
+    squareC5 = new Squares(Columns.C, Rows.r5);
+    squareC6 = new Squares(Columns.C, Rows.r6);
+    squareC7 = new Squares(Columns.C, Rows.r7);
+    squareC8 = new Squares(Columns.C, Rows.r8);
+
+    squareD1 = new Squares(Columns.D, Rows.r1);
+    squareD2 = new Squares(Columns.D, Rows.r2);
+    squareD3 = new Squares(Columns.D, Rows.r3);
+    squareD4 = new Squares(Columns.D, Rows.r4);
+    squareD5 = new Squares(Columns.D, Rows.r5);
+    squareD6 = new Squares(Columns.D, Rows.r6);
+    squareD7 = new Squares(Columns.D, Rows.r7);
+    squareD8 = new Squares(Columns.D, Rows.r8);
+
+    squareE1 = new Squares(Columns.E, Rows.r1);
+    squareE2 = new Squares(Columns.E, Rows.r2);
+    squareE3 = new Squares(Columns.E, Rows.r3);
+    squareE4 = new Squares(Columns.E, Rows.r4);
+    squareE5 = new Squares(Columns.E, Rows.r5);
+    squareE6 = new Squares(Columns.E, Rows.r6);
+    squareE7 = new Squares(Columns.E, Rows.r7);
+    squareE8 = new Squares(Columns.E, Rows.r8);
+
+    squareF1 = new Squares(Columns.F, Rows.r1);
+    squareF2 = new Squares(Columns.F, Rows.r2);
+    squareF3 = new Squares(Columns.F, Rows.r3);
+    squareF4 = new Squares(Columns.F, Rows.r4);
+    squareF5 = new Squares(Columns.F, Rows.r5);
+    squareF6 = new Squares(Columns.F, Rows.r6);
+    squareF7 = new Squares(Columns.F, Rows.r7);
+    squareF8 = new Squares(Columns.F, Rows.r8);
+
+    squareG1 = new Squares(Columns.G, Rows.r1);
+    squareG2 = new Squares(Columns.G, Rows.r2);
+    squareG3 = new Squares(Columns.G, Rows.r3);
+    squareG4 = new Squares(Columns.G, Rows.r4);
+    squareG5 = new Squares(Columns.G, Rows.r5);
+    squareG6 = new Squares(Columns.G, Rows.r6);
+    squareG7 = new Squares(Columns.G, Rows.r7);
+    squareG8 = new Squares(Columns.G, Rows.r8);
+
+    squareH1 = new Squares(Columns.H, Rows.r1);
+    squareH2 = new Squares(Columns.H, Rows.r2);
+    squareH3 = new Squares(Columns.H, Rows.r3);
+    squareH4 = new Squares(Columns.H, Rows.r4);
+    squareH5 = new Squares(Columns.H, Rows.r5);
+    squareH6 = new Squares(Columns.H, Rows.r6);
+    squareH7 = new Squares(Columns.H, Rows.r7);
+    squareH8 = new Squares(Columns.H, Rows.r8);
+
+}
+
+initializeEmptyBoard();*/
+/*function putPieceInSquare(squareId:Squares, color:Colors, kind:Kinds){
+
+    let square: HTMLElement|null = document.getElementById(squareId.toString())
+
+    let imageSource: string = createImageURL(color, kind);
     console.log(imageSource);
-    let piece = document.createElement('img');
+    let piece: HTMLElement|null = document.createElement('img');
     piece.setAttribute('src', imageSource);
-    square === null || square === void 0 ? void 0 : square.appendChild(piece);
+    square?.appendChild(piece);
 }
-function createImageURL(color, kind) {
-    let URL = 'img/' + color.toString() + '-' + kind.toString() + '.png';
+
+function createImageURL(color: Colors, kind: Kinds): string{
+    let URL: string = 'img/' + color.toString() + '-' + kind.toString() + '.png';
     return URL;
-}
-function initializeBoard() {
-    console.log('aaa');
-    new Piece(Squares.a1, Colors.white, Kinds.rook);
-}
-initializeBoard();
+}*/ 
