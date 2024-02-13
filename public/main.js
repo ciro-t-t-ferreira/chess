@@ -2,7 +2,6 @@
 /*
     Refat:
         -it must be a simpler way of describing the king's moves
-        -the sequence of columns/rows arguments is a mess, need to normalize
 */
 var Colors;
 (function (Colors) {
@@ -48,11 +47,11 @@ class Pawn extends Piece {
         }
         if (colorPiece == Colors.black) {
             if (row == 6) {
-                legalSquares.push([row - 1, column]);
-                legalSquares.push([row - 2, column]);
+                legalSquares.push([column, row - 1]);
+                legalSquares.push([column, row - 2]);
             }
             else {
-                isInsideBoard(column, row - 1) ? legalSquares.push([row - 1, column]) : undefined;
+                isInsideBoard(column, row - 1) ? legalSquares.push([column, row - 1]) : undefined;
             }
         }
         console.log(legalSquares);
@@ -62,45 +61,58 @@ class Pawn extends Piece {
         return Pawn.legalMoves(square);
     }
 }
-/*
-class Knight extends Piece{
-    constructor(color: Colors){
-    super(color);}
-    
-    legalMoves(square:Squares): [number, number][] {
-        let legalSquares: Squares[] = [];
+class Knight extends Piece {
+    constructor(color) {
+        super(color);
+    }
+    static legalMoves(square) {
+        let legalSquares = [];
+        let column = square.column;
+        let row = square.row;
+        isInsideBoard(column + 2, row + 1) ? legalSquares.push([column + 2, row + 1]) : undefined;
+        isInsideBoard(column + 2, row - 1) ? legalSquares.push([column + 2, row - 1]) : undefined;
+        isInsideBoard(column - 2, row + 1) ? legalSquares.push([column - 2, row + 1]) : undefined;
+        isInsideBoard(column - 2, row - 1) ? legalSquares.push([column - 2, row - 1]) : undefined;
+        isInsideBoard(column + 1, row + 2) ? legalSquares.push([column + 1, row + 2]) : undefined;
+        isInsideBoard(column + 1, row - 2) ? legalSquares.push([column + 1, row - 2]) : undefined;
+        isInsideBoard(column - 1, row + 2) ? legalSquares.push([column - 1, row + 2]) : undefined;
+        isInsideBoard(column - 1, row - 2) ? legalSquares.push([column - 1, row - 2]) : undefined;
+        console.log(legalSquares);
         return legalSquares;
+    }
+    legalMoves(square) {
+        return Knight.legalMoves(square);
     }
 }
-
+/*
 class Bishop extends Piece{
-    constructor(color: Colors){
-    super(color);}
-    
-    legalMoves(square:Squares): Squares[] {
-        let legalSquares: Squares[] = [];
-        return legalSquares;
-    }
+constructor(color: Colors){
+super(color);}
+
+legalMoves(square:Squares): Squares[] {
+let legalSquares: Squares[] = [];
+return legalSquares;
+}
 }
 
 class Rook extends Piece{
-    constructor(color: Colors){
-    super(color);}
-    
-    legalMoves(square:Squares): Squares[] {
-        let legalSquares: Squares[] = [];
-        return legalSquares;
-    }
+constructor(color: Colors){
+super(color);}
+
+legalMoves(square:Squares): Squares[] {
+let legalSquares: Squares[] = [];
+return legalSquares;
+}
 }
 
 class Queen extends Piece{
-    constructor(color: Colors){
-    super(color);}
-    
-    legalMoves(square:Squares): Squares[] {
-        let legalSquares: Squares[] = [];
-        return legalSquares;
-    }
+constructor(color: Colors){
+super(color);}
+
+legalMoves(square:Squares): Squares[] {
+let legalSquares: Squares[] = [];
+return legalSquares;
+}
 }
 
 */
@@ -175,9 +187,9 @@ function initializeEmptyBoard() {
 }
 initializePieces();
 function initializePieces() {
-    let blackPawn = new Pawn(Colors.black);
+    let blackPawn = new Knight(Colors.black);
     tableState[0][0].createPiece(blackPawn);
-    Pawn.legalMoves(tableState[0][0]); //just testing, this command will be handled in other way
+    Knight.legalMoves(tableState[0][0]); //just testing, this command will be handled in other way
 }
 /*
     Player clicks square
