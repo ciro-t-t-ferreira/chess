@@ -54,7 +54,6 @@ class Pawn extends Piece {
                 isInsideBoard(column, row - 1) ? legalSquares.push([column, row - 1]) : undefined;
             }
         }
-        console.log(legalSquares);
         return legalSquares;
     }
     legalMoves(square) {
@@ -135,11 +134,10 @@ class Bishop extends Piece {
                 legalSquares.push([possibleColumn, possibleRow]);
             }
         }
-        console.log(legalSquares);
         return legalSquares;
     }
     legalMoves(square) {
-        return Rook.legalMoves(square);
+        return Bishop.legalMoves(square);
     }
 }
 class Rook extends Piece {
@@ -196,25 +194,20 @@ class Rook extends Piece {
         return Rook.legalMoves(square);
     }
 }
-/*
-class Queen extends Piece{
-    constructor(color: Colors){
-    super(color);}
-    
-    static legalMoves(square:Squares): [number , number][] {
-        let legalSquares: [number , number][] = [] ;
-        let column = square.column;
-        let row = square.row;
+class Queen extends Piece {
+    constructor(color) {
+        super(color);
+    }
+    static legalMoves(square) {
+        let legalSquares = [];
+        legalSquares = Rook.legalMoves(square).concat(Bishop.legalMoves(square));
+        console.log(legalSquares);
         return legalSquares;
     }
-    
-    legalMoves(square:Squares):[number, number][] {
+    legalMoves(square) {
         return Queen.legalMoves(square);
     }
-    
 }
-
-*/
 class King extends Piece {
     constructor(color) {
         super(color);
@@ -286,9 +279,9 @@ function initializeEmptyBoard() {
 }
 initializePieces();
 function initializePieces() {
-    let blackBishop = new Bishop(Colors.black);
-    tableState[3][3].createPiece(blackBishop);
-    Bishop.legalMoves(tableState[3][3]); //just testing, this command will be handled in other way
+    let blackQueen = new Queen(Colors.black);
+    tableState[0][0].createPiece(blackQueen);
+    Queen.legalMoves(tableState[0][0]); //just testing, this command will be handled in other way
 }
 /*
     Player clicks square
