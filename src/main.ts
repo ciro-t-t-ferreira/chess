@@ -251,7 +251,6 @@ class Queen extends Piece{
         let legalSquares: [number , number][] = [] ;
         
         legalSquares = Rook.legalMoves(square).concat(Bishop.legalMoves(square));
-        console.log(legalSquares)
 
         return legalSquares;
     }
@@ -381,3 +380,51 @@ function initializePieces(){
         Piece in the abstract
 
 */
+
+//****** CONTROLLER ********
+
+const columnDictionary: {[key: number]: string} = {
+    0: 'a',
+    1: 'b',
+    2: 'c',
+    3: 'd',
+    4: 'e',
+    5: 'f',
+    6: 'g',
+    7: 'h'
+}
+
+let sampleSquare = new Squares(3,3);
+let samplePiece = new Pawn(Colors.black);
+
+addPieceOnBoard(samplePiece, sampleSquare);
+function addPieceOnBoard(piece:Piece, square:Squares){
+    let id: string = columnDictionary[square.column] + (square.row + 1).toString(); 
+    let squareHTML: HTMLElement | null = document.getElementById(id);
+    
+    
+    let pieceIMG: HTMLElement = document.createElement('img');
+    console.log(pieceIMG);
+    pieceIMG.classList.add('piece');
+    pieceIMG.setAttribute('src', createImgURL(piece))
+    console.log(piece)
+
+    squareHTML?.appendChild(pieceIMG);
+}
+
+function createImgURL(piece: Piece): string {
+    let URL:string;
+    let kind:string = (piece.constructor.name).toLowerCase();
+    let color:string = 'none';
+
+    if(piece.color == 0){
+        color = 'white';
+    }
+    else if(piece.color == 1){
+        color = 'black';
+    }
+
+    URL = 'img/' + color + '-' + kind + '.png';
+
+    return URL;
+}
