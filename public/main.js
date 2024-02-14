@@ -83,16 +83,65 @@ class Knight extends Piece {
         return Knight.legalMoves(square);
     }
 }
-/*
-class Bishop extends Piece{
-constructor(color: Colors){
-super(color);}
-
-legalMoves(square:Squares): Squares[] {
-let legalSquares: Squares[] = [];
-return legalSquares;
+class Bishop extends Piece {
+    constructor(color) {
+        super(color);
+    }
+    static legalMoves(square) {
+        let legalSquares = [];
+        let column = square.column;
+        let row = square.row;
+        let possibleColumn = column;
+        let possibleRow = row;
+        let insideBoard = true;
+        while (insideBoard) {
+            possibleColumn += 1;
+            possibleRow += 1;
+            insideBoard = isInsideBoard(possibleColumn, possibleRow);
+            if (insideBoard) {
+                legalSquares.push([possibleColumn, possibleRow]);
+            }
+        }
+        possibleColumn = column;
+        possibleRow = row;
+        insideBoard = true;
+        while (insideBoard) {
+            possibleColumn -= 1;
+            possibleRow -= 1;
+            insideBoard = isInsideBoard(possibleColumn, possibleRow);
+            if (insideBoard) {
+                legalSquares.push([possibleColumn, possibleRow]);
+            }
+        }
+        possibleColumn = column;
+        possibleRow = row;
+        insideBoard = true;
+        while (insideBoard) {
+            possibleColumn += 1;
+            possibleRow -= 1;
+            insideBoard = isInsideBoard(possibleColumn, possibleRow);
+            if (insideBoard) {
+                legalSquares.push([possibleColumn, possibleRow]);
+            }
+        }
+        possibleColumn = column;
+        possibleRow = row;
+        insideBoard = true;
+        while (insideBoard) {
+            possibleColumn -= 1;
+            possibleRow += 1;
+            insideBoard = isInsideBoard(possibleColumn, possibleRow);
+            if (insideBoard) {
+                legalSquares.push([possibleColumn, possibleRow]);
+            }
+        }
+        console.log(legalSquares);
+        return legalSquares;
+    }
+    legalMoves(square) {
+        return Rook.legalMoves(square);
+    }
 }
-}*/
 class Rook extends Piece {
     constructor(color) {
         super(color);
@@ -141,7 +190,6 @@ class Rook extends Piece {
                 legalSquares.push([possibleColumn, possibleRow]);
             }
         }
-        console.log(legalSquares);
         return legalSquares;
     }
     legalMoves(square) {
@@ -238,9 +286,9 @@ function initializeEmptyBoard() {
 }
 initializePieces();
 function initializePieces() {
-    let blackRook = new Rook(Colors.black);
-    tableState[3][3].createPiece(blackRook);
-    Rook.legalMoves(tableState[3][3]); //just testing, this command will be handled in other way
+    let blackBishop = new Bishop(Colors.black);
+    tableState[3][3].createPiece(blackBishop);
+    Bishop.legalMoves(tableState[3][3]); //just testing, this command will be handled in other way
 }
 /*
     Player clicks square
