@@ -386,11 +386,20 @@ function squareClick(id) {
         && (selectedSquare != null)) {
         movePiece(selectedPiece, selectedSquare, square);
         eraseAllLegalMoves();
+        changeTurn();
     }
     else {
         selectedSquare = null;
         selectedPiece = null;
         eraseAllLegalMoves();
+    }
+}
+function changeTurn() {
+    if (turn == Colors.white) {
+        turn = Colors.black;
+    }
+    else if (turn == Colors.black) {
+        turn = Colors.white;
     }
 }
 function showLegalMoves(piece, square) {

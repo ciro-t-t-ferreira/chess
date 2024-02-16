@@ -504,6 +504,7 @@ function squareClick(id: string){
         && (selectedSquare != null)){
         movePiece(selectedPiece, selectedSquare, square);
         eraseAllLegalMoves();
+        changeTurn();
     }    
 
     else{
@@ -512,6 +513,15 @@ function squareClick(id: string){
         eraseAllLegalMoves();
     }
 
+}
+
+function changeTurn(){
+    if (turn == Colors.white){
+        turn = Colors.black
+    }
+    else if (turn == Colors.black){
+        turn = Colors.white
+    }
 }
 
 function showLegalMoves(piece: Piece, square: Squares){
