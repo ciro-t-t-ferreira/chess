@@ -302,9 +302,20 @@ function initializeEmptyBoard() {
 }
 initializePieces();
 function initializePieces() {
-    let blackQueen = new Queen(Colors.black);
-    tableState[2][2].createPiece(blackQueen);
-    Queen.legalMoves(tableState[2][2]); //just testing, this command will be handled in other way
+    let whitePawn = new Pawn(Colors.white);
+    tableState[0][1].createPiece(whitePawn);
+    let blackPawn = new Pawn(Colors.black);
+    tableState[0][6].createPiece(blackPawn);
+    let whiteKing = new King(Colors.white);
+    tableState[4][2].createPiece(whiteKing);
+    let whiteKnight = new Knight(Colors.white);
+    tableState[4][4].createPiece(whiteKnight);
+    let whiteQueen = new Queen(Colors.white);
+    tableState[3][3].createPiece(whiteQueen);
+    let whiteRook = new Rook(Colors.white);
+    tableState[6][6].createPiece(whiteRook);
+    let whiteBishop = new Bishop(Colors.white);
+    tableState[2][3].createPiece(whiteBishop);
 }
 /*
     Player clicks square
@@ -315,20 +326,19 @@ function initializePieces() {
 
 */
 //****** CONTROLLER ********
+function getIdByCoordinates(column, row) {
+    return columnDictionary[column] + (row + 1).toString();
+}
+function getIdBySquare(square) {
+    return columnDictionary[square.column] + (square.row + 1).toString();
+}
 function addPieceOnBoard(piece, square) {
-    let id = columnDictionary[square.column] + (square.row + 1).toString();
+    let id = getIdBySquare(square);
     let squareHTML = document.getElementById(id);
     let pieceIMG = document.createElement('img');
     pieceIMG.classList.add('piece');
     pieceIMG.setAttribute('src', createImgURL(piece));
     squareHTML === null || squareHTML === void 0 ? void 0 : squareHTML.appendChild(pieceIMG);
-}
-function squareClick(id) {
-    let column = columnDictionaryReverse[id[0]];
-    let row = (+(id[1]) - 1); //the unary + operator trasnforms the string into a number
-    console.log(tableState[column][row]);
-    //console.log(row);
-    //tableState[column][row].piece
 }
 function createImgURL(piece) {
     let URL;
@@ -342,4 +352,42 @@ function createImgURL(piece) {
     }
     URL = 'img/' + color + '-' + kind + '.png';
     return URL;
+}
+function squareClick(id) {
+    let column = columnDictionaryReverse[id[0]];
+    let row = (+(id[1]) - 1); //the unary + operator trasnforms the string into a number
+    let piece = tableState[column][row].piece;
+    let square = tableState[column][row];
+    if (piece != null) {
+        showLegalMoves(piece, square);
+    }
+}
+function showLegalMoves(piece, square) {
+    let moveList = [];
+    if (piece instanceof Pawn) {
+        moveList = Pawn.legalMoves(square);
+    }
+    else if (piece instanceof Knight) {
+        moveList = Knight.legalMoves(square);
+    }
+    else if (piece instanceof Bishop) {
+        moveList = Bishop.legalMoves(square);
+    }
+    else if (piece instanceof Rook) {
+        moveList = Rook.legalMoves(square);
+    }
+    else if (piece instanceof Queen) {
+        moveList = Queen.legalMoves(square);
+    }
+    else if (piece instanceof King) {
+        moveList = King.legalMoves(square);
+    }
+    for (let square of moveList) {
+        let column = square[0];
+        let row = square[1];
+        let id = getIdByCoordinates(column, row);
+        let squareHTML = document.getElementById(id);
+        console.log(squareHTML);
+        squareHTML === null || squareHTML === void 0 ? void 0 : squareHTML.classList.add('legalMove');
+    }
 }
