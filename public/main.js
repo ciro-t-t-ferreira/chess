@@ -108,17 +108,35 @@ class Knight extends Piece {
         super(color);
     }
     static legalMoves(square) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         let legalSquares = [];
         let column = square.column;
         let row = square.row;
-        isInsideBoard(column + 2, row + 1) ? legalSquares.push([column + 2, row + 1]) : undefined;
-        isInsideBoard(column + 2, row - 1) ? legalSquares.push([column + 2, row - 1]) : undefined;
-        isInsideBoard(column - 2, row + 1) ? legalSquares.push([column - 2, row + 1]) : undefined;
-        isInsideBoard(column - 2, row - 1) ? legalSquares.push([column - 2, row - 1]) : undefined;
-        isInsideBoard(column + 1, row + 2) ? legalSquares.push([column + 1, row + 2]) : undefined;
-        isInsideBoard(column + 1, row - 2) ? legalSquares.push([column + 1, row - 2]) : undefined;
-        isInsideBoard(column - 1, row + 2) ? legalSquares.push([column - 1, row + 2]) : undefined;
-        isInsideBoard(column - 1, row - 2) ? legalSquares.push([column - 1, row - 2]) : undefined;
+        let colorPiece = (_a = square.piece) === null || _a === void 0 ? void 0 : _a.color;
+        if (colorPiece != ((_b = tableState[column + 2][row + 1].piece) === null || _b === void 0 ? void 0 : _b.color)) {
+            isInsideBoard(column + 2, row + 1) ? legalSquares.push([column + 2, row + 1]) : undefined;
+        }
+        if (colorPiece != ((_c = tableState[column + 2][row - 1].piece) === null || _c === void 0 ? void 0 : _c.color)) {
+            isInsideBoard(column + 2, row - 1) ? legalSquares.push([column + 2, row - 1]) : undefined;
+        }
+        if (colorPiece != ((_d = tableState[column - 2][row + 1].piece) === null || _d === void 0 ? void 0 : _d.color)) {
+            isInsideBoard(column - 2, row + 1) ? legalSquares.push([column - 2, row + 1]) : undefined;
+        }
+        if (colorPiece != ((_e = tableState[column - 2][row - 1].piece) === null || _e === void 0 ? void 0 : _e.color)) {
+            isInsideBoard(column - 2, row - 1) ? legalSquares.push([column - 2, row - 1]) : undefined;
+        }
+        if (colorPiece != ((_f = tableState[column + 1][row + 2].piece) === null || _f === void 0 ? void 0 : _f.color)) {
+            isInsideBoard(column + 1, row + 2) ? legalSquares.push([column + 1, row + 2]) : undefined;
+        }
+        if (colorPiece != ((_g = tableState[column + 1][row - 2].piece) === null || _g === void 0 ? void 0 : _g.color)) {
+            isInsideBoard(column + 1, row - 2) ? legalSquares.push([column + 1, row - 2]) : undefined;
+        }
+        if (colorPiece != ((_h = tableState[column - 1][row + 2].piece) === null || _h === void 0 ? void 0 : _h.color)) {
+            isInsideBoard(column - 1, row + 2) ? legalSquares.push([column - 1, row + 2]) : undefined;
+        }
+        if (colorPiece != ((_j = tableState[column - 1][row - 2].piece) === null || _j === void 0 ? void 0 : _j.color)) {
+            isInsideBoard(column - 1, row - 2) ? legalSquares.push([column - 1, row - 2]) : undefined;
+        }
         return legalSquares;
     }
     legalMoves(square) {

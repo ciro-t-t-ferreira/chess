@@ -129,29 +129,47 @@ class Pawn extends Piece{
     
 class Knight extends Piece{
     constructor(color: Colors){
-        super(color);}
-        
-        static legalMoves(square:Squares): [number , number][] {
-            let legalSquares: [number , number][] = [] ;
-            let column = square.column;
-            let row = square.row;
-
-            isInsideBoard(column + 2, row + 1)? legalSquares.push([column + 2, row + 1]) : undefined;
-            isInsideBoard(column + 2, row - 1)? legalSquares.push([column + 2, row - 1]) : undefined;
-            isInsideBoard(column - 2, row + 1)? legalSquares.push([column - 2, row + 1]) : undefined;
-            isInsideBoard(column - 2, row - 1)? legalSquares.push([column - 2, row - 1]) : undefined;
-            isInsideBoard(column + 1, row + 2)? legalSquares.push([column + 1, row + 2]) : undefined;
-            isInsideBoard(column + 1, row - 2)? legalSquares.push([column + 1, row - 2]) : undefined;
-            isInsideBoard(column - 1, row + 2)? legalSquares.push([column - 1, row + 2]) : undefined;
-            isInsideBoard(column - 1, row - 2)? legalSquares.push([column - 1, row - 2]) : undefined;
-
-            return legalSquares;
-        }
-        
-        legalMoves(square:Squares):[number, number][] {         
-            return Knight.legalMoves(square);
-        }
+        super(color);
     }
+        
+    static legalMoves(square:Squares): [number , number][] {
+        let legalSquares: [number , number][] = [] ;
+        let column = square.column;
+        let row = square.row;
+        let colorPiece = square.piece?.color;
+
+        if (colorPiece != tableState[column + 2][row + 1].piece?.color){
+            isInsideBoard(column + 2, row + 1)? legalSquares.push([column + 2, row + 1]) : undefined;
+        }
+        if (colorPiece != tableState[column + 2][row - 1].piece?.color){
+            isInsideBoard(column + 2, row - 1)? legalSquares.push([column + 2, row - 1]) : undefined;
+        }
+        if (colorPiece != tableState[column - 2][row + 1].piece?.color){        
+            isInsideBoard(column - 2, row + 1)? legalSquares.push([column - 2, row + 1]) : undefined;
+        }
+        if (colorPiece != tableState[column -2][row - 1].piece?.color){
+            isInsideBoard(column - 2, row - 1)? legalSquares.push([column - 2, row - 1]) : undefined;
+        }
+        if (colorPiece != tableState[column + 1][row + 2].piece?.color){
+            isInsideBoard(column + 1, row + 2)? legalSquares.push([column + 1, row + 2]) : undefined;
+        }
+        if (colorPiece != tableState[column + 1][row - 2].piece?.color){        
+            isInsideBoard(column + 1, row - 2)? legalSquares.push([column + 1, row - 2]) : undefined;
+        }
+        if (colorPiece != tableState[column - 1][row + 2].piece?.color){        
+            isInsideBoard(column - 1, row + 2)? legalSquares.push([column - 1, row + 2]) : undefined;
+        }
+        if (colorPiece != tableState[column - 1][row - 2].piece?.color){
+            isInsideBoard(column - 1, row - 2)? legalSquares.push([column - 1, row - 2]) : undefined;
+        }
+
+        return legalSquares;
+    }
+    
+    legalMoves(square:Squares):[number, number][] {         
+        return Knight.legalMoves(square);
+    }
+}
         
         
 class Bishop extends Piece{
