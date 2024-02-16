@@ -51,6 +51,7 @@ class Squares{
 
     destructPiece(){
         this.piece = null;
+        removePieceFromBoard(this);
     }
 }
 
@@ -362,8 +363,8 @@ function isInsideBoard(column: number, row: number): boolean{
 function movePiece(piece: Piece, fromSquare: Squares, toSquare: Squares){
 
     if (fromSquare.piece == piece){
-        fromSquare.piece = null; //needs to be changed to match the new functions in Square
-        toSquare.piece == piece;
+        toSquare.createPiece(piece);
+        fromSquare.destructPiece(); //needs to be changed to match the new functions in Square
     }
     else{
         throw new Error("Specified piece not found in Square");
@@ -443,9 +444,20 @@ function addPieceOnBoard(piece:Piece, square:Squares){
     
     let pieceIMG: HTMLElement = document.createElement('img');
     pieceIMG.classList.add('piece');
+    pieceIMG.id = 'image' + square.column.toString() + square.row.toString();
     pieceIMG.setAttribute('src', createImgURL(piece))
 
     squareHTML?.appendChild(pieceIMG);
+}
+
+function removePieceFromBoard(square:Squares){
+    let id: string = getIdBySquare(square); 
+    let squareHTML: HTMLElement | null = document.getElementById(id);
+    let pieceIMG: HTMLElement | null= document.getElementById('image' +
+        square.column.toString() + square.row.toString())
+    if (pieceIMG != null){
+        squareHTML?.removeChild(pieceIMG);
+    }
 }
 
 function createImgURL(piece: Piece): string {
@@ -465,15 +477,39 @@ function createImgURL(piece: Piece): string {
     return URL;
 } 
 
+let turn: Colors = Colors.white;
+let selectedSquare: Squares | null = null;
+let selectedPiece: Piece | null = null;
 function squareClick(id: string){
 
     let column: number = columnDictionaryReverse[id[0]];
     let row:    number = (+(id[1]) - 1); //the unary + operator trasnforms the string into a number
     let piece:  Piece | null  = tableState[column][row].piece;
     let square: Squares = tableState[column][row];
+
+    let legalSquares: HTMLCollection = document.getElementsByClassName('legalMove');
+    let legalMoveList: string[] = [];
     
-    if (piece != null){
+    for (let square of legalSquares){
+        legalMoveList.push(square.id);
+    }
+    
+    if (piece?.color == turn){
         showLegalMoves(piece, square);
+        selectedSquare = square;
+        selectedPiece = piece;        
+    }
+
+    else if ((legalMoveList.includes(id)) && (selectedPiece !=null)
+        && (selectedSquare != null)){
+        movePiece(selectedPiece, selectedSquare, square);
+        eraseAllLegalMoves();
+    }    
+
+    else{
+        selectedSquare = null;
+        selectedPiece = null;
+        eraseAllLegalMoves();
     }
 
 }
@@ -512,9 +548,16 @@ function showLegalMoves(piece: Piece, square: Squares){
 
         let id : string = getIdByCoordinates(column, row);
         let squareHTML: HTMLElement | null = document.getElementById(id);
-        console.log(squareHTML)
         squareHTML?.classList.add('legalMove');
     }
 
+}
+
+function eraseAllLegalMoves(){
+    let legalSquares: Element[] = Array.from(document.getElementsByClassName('legalMove'));
+    legalSquares.forEach(legalSquares =>{
+        legalSquares.classList.remove('legalMove')
+    })
+    
 }
 
