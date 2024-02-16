@@ -67,20 +67,34 @@ class Pawn extends Piece {
         let row = square.row;
         if (colorPiece == Colors.white) {
             if (row == 1) {
-                legalSquares.push([column, row + 1]);
-                legalSquares.push([column, row + 2]);
+                if (tableState[column][row + 1].piece == null) {
+                    legalSquares.push([column, row + 1]);
+                }
+                if ((tableState[column][row + 1].piece == null) &&
+                    ((tableState[column][row + 1].piece == null)))
+                    legalSquares.push([column, row + 2]);
             }
             else {
-                isInsideBoard(column, row + 1) ? legalSquares.push([column, row + 1]) : undefined;
+                //can the isInsideBoard check this when I implement promotion
+                if (tableState[column][row + 1].piece == null) {
+                    isInsideBoard(column, row + 1) ? legalSquares.push([column, row + 1]) : undefined;
+                }
             }
         }
         if (colorPiece == Colors.black) {
             if (row == 6) {
-                legalSquares.push([column, row - 1]);
-                legalSquares.push([column, row - 2]);
+                if (tableState[column][row - 1].piece == null) {
+                    legalSquares.push([column, row - 1]);
+                }
+                if ((tableState[column][row - 1].piece == null) &&
+                    ((tableState[column][row - 1].piece == null)))
+                    legalSquares.push([column, row - 2]);
             }
             else {
-                isInsideBoard(column, row - 1) ? legalSquares.push([column, row - 1]) : undefined;
+                //can the isInsideBoard check this when I implement promotion
+                if (tableState[column][row - 1].piece == null) {
+                    isInsideBoard(column, row - 1) ? legalSquares.push([column, row - 1]) : undefined;
+                }
             }
         }
         return legalSquares;
@@ -116,13 +130,15 @@ class Bishop extends Piece {
         super(color);
     }
     static legalMoves(square) {
+        var _a;
         let legalSquares = [];
         let column = square.column;
         let row = square.row;
+        let colorPiece = (_a = square.piece) === null || _a === void 0 ? void 0 : _a.color;
         let possibleColumn = column;
         let possibleRow = row;
         let insideBoard = true;
-        while (insideBoard) {
+        while ((insideBoard) && !isACapture(colorPiece, possibleColumn, possibleRow)) {
             possibleColumn += 1;
             possibleRow += 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
@@ -133,7 +149,7 @@ class Bishop extends Piece {
         possibleColumn = column;
         possibleRow = row;
         insideBoard = true;
-        while (insideBoard) {
+        while ((insideBoard) && !isACapture(colorPiece, possibleColumn, possibleRow)) {
             possibleColumn -= 1;
             possibleRow -= 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
@@ -144,7 +160,7 @@ class Bishop extends Piece {
         possibleColumn = column;
         possibleRow = row;
         insideBoard = true;
-        while (insideBoard) {
+        while ((insideBoard) && !isACapture(colorPiece, possibleColumn, possibleRow)) {
             possibleColumn += 1;
             possibleRow -= 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
@@ -155,7 +171,7 @@ class Bishop extends Piece {
         possibleColumn = column;
         possibleRow = row;
         insideBoard = true;
-        while (insideBoard) {
+        while ((insideBoard) && !isACapture(colorPiece, possibleColumn, possibleRow)) {
             possibleColumn -= 1;
             possibleRow += 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
@@ -182,7 +198,7 @@ class Rook extends Piece {
         let possibleColumn = column;
         let possibleRow = row;
         let insideBoard = true;
-        while (insideBoard) {
+        while ((insideBoard) && !isACapture(colorPiece, possibleColumn, possibleRow)) {
             possibleColumn += 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
             if (insideBoard) {
@@ -192,7 +208,7 @@ class Rook extends Piece {
         possibleColumn = column;
         possibleRow = row;
         insideBoard = true;
-        while (insideBoard) {
+        while ((insideBoard) && !isACapture(colorPiece, possibleColumn, possibleRow)) {
             possibleColumn -= 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
             if (insideBoard) {
@@ -212,7 +228,7 @@ class Rook extends Piece {
         possibleColumn = column;
         possibleRow = row;
         insideBoard = true;
-        while (insideBoard) {
+        while ((insideBoard) && !isACapture(colorPiece, possibleColumn, possibleRow)) {
             possibleRow -= 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
             if (insideBoard) {
