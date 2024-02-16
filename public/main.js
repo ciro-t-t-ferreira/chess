@@ -1,8 +1,31 @@
 "use strict";
 /*
-    Refat:
-        -it must be a simpler way of describing the king's moves
+Refat:
+    -Distribute the code through more files (model, controler, constants)
+    -it must be a simpler way of describing the pieces moves in general
+    -I created a reverse dictionary to access the keys through the values, which is kinda ridiculous, it must be a
+        more reasonable way to do that
 */
+const columnDictionary = {
+    0: 'a',
+    1: 'b',
+    2: 'c',
+    3: 'd',
+    4: 'e',
+    5: 'f',
+    6: 'g',
+    7: 'h'
+};
+const columnDictionaryReverse = {
+    'a': 0,
+    'b': 1,
+    'c': 2,
+    'd': 3,
+    'e': 4,
+    'f': 5,
+    'g': 6,
+    'h': 7
+};
 var Colors;
 (function (Colors) {
     Colors[Colors["white"] = 0] = "white";
@@ -16,6 +39,7 @@ class Squares {
     }
     createPiece(piece) {
         this.piece = piece;
+        addPieceOnBoard(piece, this);
     }
     destructPiece() {
         this.piece = null;
@@ -279,8 +303,8 @@ function initializeEmptyBoard() {
 initializePieces();
 function initializePieces() {
     let blackQueen = new Queen(Colors.black);
-    tableState[0][0].createPiece(blackQueen);
-    Queen.legalMoves(tableState[0][0]); //just testing, this command will be handled in other way
+    tableState[2][2].createPiece(blackQueen);
+    Queen.legalMoves(tableState[2][2]); //just testing, this command will be handled in other way
 }
 /*
     Player clicks square
@@ -291,28 +315,20 @@ function initializePieces() {
 
 */
 //****** CONTROLLER ********
-const columnDictionary = {
-    0: 'a',
-    1: 'b',
-    2: 'c',
-    3: 'd',
-    4: 'e',
-    5: 'f',
-    6: 'g',
-    7: 'h'
-};
-let sampleSquare = new Squares(3, 3);
-let samplePiece = new Pawn(Colors.black);
-addPieceOnBoard(samplePiece, sampleSquare);
 function addPieceOnBoard(piece, square) {
     let id = columnDictionary[square.column] + (square.row + 1).toString();
     let squareHTML = document.getElementById(id);
     let pieceIMG = document.createElement('img');
-    console.log(pieceIMG);
     pieceIMG.classList.add('piece');
     pieceIMG.setAttribute('src', createImgURL(piece));
-    console.log(piece);
     squareHTML === null || squareHTML === void 0 ? void 0 : squareHTML.appendChild(pieceIMG);
+}
+function squareClick(id) {
+    let column = columnDictionaryReverse[id[0]];
+    let row = (+(id[1]) - 1); //the unary + operator trasnforms the string into a number
+    console.log(tableState[column][row]);
+    //console.log(row);
+    //tableState[column][row].piece
 }
 function createImgURL(piece) {
     let URL;

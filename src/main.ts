@@ -1,7 +1,32 @@
 /*
-    Refat: 
-        -it must be a simpler way of describing the king's moves
+Refat: 
+    -Distribute the code through more files (model, controler, constants) 
+    -it must be a simpler way of describing the pieces moves in general
+    -I created a reverse dictionary to access the keys through the values, which is kinda ridiculous, it must be a
+        more reasonable way to do that
 */
+
+const columnDictionary: {[key: number]: string} = {
+    0: 'a',
+    1: 'b',
+    2: 'c',
+    3: 'd',
+    4: 'e',
+    5: 'f',
+    6: 'g',
+    7: 'h'
+}
+
+const columnDictionaryReverse: {[key: string]: number} = {
+    'a' : 0,
+    'b' : 1,
+    'c' : 2,
+    'd' : 3,
+    'e' : 4,
+    'f' : 5,
+    'g' : 6,
+    'h' : 7
+}
 
 enum Colors{
     'white',
@@ -21,6 +46,7 @@ class Squares{
 
     createPiece(piece: Piece){
         this.piece = piece;
+        addPieceOnBoard(piece, this);
     }
 
     destructPiece(){
@@ -40,43 +66,43 @@ abstract class Piece{
 
 class Pawn extends Piece{
     constructor(color: Colors){        
-        super(color);}
+        super(color);
+    }
         
-        static legalMoves(square:Squares): [number , number][] {
-            let legalSquares: [number , number][] = [] ;
+    static legalMoves(square:Squares): [number , number][] {
+        let legalSquares: [number , number][] = [] ;
+        
+        let colorPiece = square.piece?.color;
+        let column = square.column;
+        let row = square.row;
+        
+        if(colorPiece == Colors.white){
             
-            let colorPiece = square.piece?.color;
-            let column = square.column;
-            let row = square.row;
-            
-            if(colorPiece == Colors.white){
-                
-                if (row == 1){
-                    legalSquares.push([column, row + 1]);
-                    legalSquares.push([column, row + 2]);
-                }
+            if (row == 1){
+                legalSquares.push([column, row + 1]);
+                legalSquares.push([column, row + 2]);
+            }
 
-                else{
-                    isInsideBoard(column, row + 1)? legalSquares.push([column, row + 1]) : undefined;
-                }
-                
+            else{
+                isInsideBoard(column, row + 1)? legalSquares.push([column, row + 1]) : undefined;
             }
             
-            if(colorPiece == Colors.black){
-                
-                if (row == 6){
-                    legalSquares.push([column, row - 1]);
-                    legalSquares.push([column, row - 2]);
-                }
-
-                else{
-                    isInsideBoard(column, row - 1)? legalSquares.push([column, row - 1]) : undefined;
-                }
-
-            }
-            return legalSquares;
         }
         
+        if(colorPiece == Colors.black){
+            
+            if (row == 6){
+                legalSquares.push([column, row - 1]);
+                legalSquares.push([column, row - 2]);
+            }
+
+            else{
+                isInsideBoard(column, row - 1)? legalSquares.push([column, row - 1]) : undefined;
+            }
+
+        }
+        return legalSquares;
+    }
         legalMoves(square:Squares):[number, number][] {         
             return Pawn.legalMoves(square);
        }
@@ -368,8 +394,8 @@ initializePieces();
 function initializePieces(){
     
     let blackQueen = new Queen(Colors.black);
-    tableState[0][0].createPiece(blackQueen);
-    Queen.legalMoves(tableState[0][0]); //just testing, this command will be handled in other way
+    tableState[2][2].createPiece(blackQueen);
+    Queen.legalMoves(tableState[2][2]); //just testing, this command will be handled in other way
 }
 
 /*
@@ -383,33 +409,27 @@ function initializePieces(){
 
 //****** CONTROLLER ********
 
-const columnDictionary: {[key: number]: string} = {
-    0: 'a',
-    1: 'b',
-    2: 'c',
-    3: 'd',
-    4: 'e',
-    5: 'f',
-    6: 'g',
-    7: 'h'
-}
 
-let sampleSquare = new Squares(3,3);
-let samplePiece = new Pawn(Colors.black);
-
-addPieceOnBoard(samplePiece, sampleSquare);
 function addPieceOnBoard(piece:Piece, square:Squares){
     let id: string = columnDictionary[square.column] + (square.row + 1).toString(); 
     let squareHTML: HTMLElement | null = document.getElementById(id);
     
     
     let pieceIMG: HTMLElement = document.createElement('img');
-    console.log(pieceIMG);
     pieceIMG.classList.add('piece');
     pieceIMG.setAttribute('src', createImgURL(piece))
-    console.log(piece)
 
     squareHTML?.appendChild(pieceIMG);
+}
+
+function squareClick(id: string){
+
+    let column: number = columnDictionaryReverse[id[0]];
+    let row:    number = (+(id[1]) - 1); //the unary + operator trasnforms the string into a number
+    console.log(tableState[column][row]);
+    //console.log(row);
+    //tableState[column][row].piece
+
 }
 
 function createImgURL(piece: Piece): string {
@@ -427,4 +447,4 @@ function createImgURL(piece: Piece): string {
     URL = 'img/' + color + '-' + kind + '.png';
 
     return URL;
-}
+} 
