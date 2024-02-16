@@ -1,5 +1,8 @@
 "use strict";
 /*
+
+Bug: when I click, consecutively (?) pieces of the same color it adds the legal moves
+
 Refat:
     -Distribute the code through more files (model, controler, constants)
     -it must be a simpler way of describing the pieces moves in general
@@ -38,6 +41,7 @@ class Squares {
         this.piece = null;
     }
     createPiece(piece) {
+        removePieceFromBoard(this);
         this.piece = piece;
         addPieceOnBoard(piece, this);
     }
@@ -170,9 +174,11 @@ class Rook extends Piece {
         super(color);
     }
     static legalMoves(square) {
+        var _a;
         let legalSquares = [];
         let column = square.column;
         let row = square.row;
+        let colorPiece = (_a = square.piece) === null || _a === void 0 ? void 0 : _a.color;
         let possibleColumn = column;
         let possibleRow = row;
         let insideBoard = true;
@@ -196,7 +202,7 @@ class Rook extends Piece {
         possibleColumn = column;
         possibleRow = row;
         insideBoard = true;
-        while (insideBoard) {
+        while ((insideBoard) && !isACapture(colorPiece, possibleColumn, possibleRow)) {
             possibleRow += 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
             if (insideBoard) {
@@ -280,6 +286,19 @@ function isInsideBoard(column, row) {
         return false;
     }
 }
+function isACapture(color, column, row) {
+    let currentPieceInSquare = tableState[column][row].piece;
+    if (color == Colors.white) {
+        return (currentPieceInSquare === null || currentPieceInSquare === void 0 ? void 0 : currentPieceInSquare.color) == Colors.black ? true : false;
+    }
+    else if (color == Colors.black) {
+        console.log('currentPieceInSquare');
+        return (currentPieceInSquare === null || currentPieceInSquare === void 0 ? void 0 : currentPieceInSquare.color) == Colors.white ? true : false;
+    }
+    else {
+        return false;
+    }
+}
 //Responsible for verifying if there is a Piece in the square to be moved,
 //and for making sure that a piece will disapear in a square and apear in another
 function movePiece(piece, fromSquare, toSquare) {
@@ -303,8 +322,6 @@ function initializeEmptyBoard() {
 }
 initializePieces();
 function initializePieces() {
-    let whitePawn = new Pawn(Colors.white);
-    tableState[0][1].createPiece(whitePawn);
     let blackPawn = new Pawn(Colors.black);
     tableState[0][6].createPiece(blackPawn);
     let whiteKing = new King(Colors.white);
@@ -314,7 +331,7 @@ function initializePieces() {
     let whiteQueen = new Queen(Colors.white);
     tableState[3][3].createPiece(whiteQueen);
     let whiteRook = new Rook(Colors.white);
-    tableState[6][6].createPiece(whiteRook);
+    tableState[0][1].createPiece(whiteRook);
     let whiteBishop = new Bishop(Colors.white);
     tableState[2][3].createPiece(whiteBishop);
 }
