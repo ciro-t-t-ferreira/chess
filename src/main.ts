@@ -1,4 +1,5 @@
 /*
+To do: disallow pieces from go through other pieces
 
 Bug: when I click, consecutively (?) pieces of the same color it adds the legal moves
 
@@ -260,6 +261,11 @@ class Rook extends Piece{
         while ((insideBoard) && !isACapture(colorPiece, possibleColumn, possibleRow)){
             possibleColumn += 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
+
+            if (isFriendlyPiece(colorPiece, possibleColumn, possibleRow)){
+                break;
+            }
+
             if (insideBoard){
                 legalSquares.push([possibleColumn,possibleRow]);
             }
@@ -272,6 +278,11 @@ class Rook extends Piece{
         while ((insideBoard) && !isACapture(colorPiece, possibleColumn, possibleRow)){
             possibleColumn -= 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
+
+            if (isFriendlyPiece(colorPiece, possibleColumn, possibleRow)){
+                break;
+            }
+
             if (insideBoard){
                 legalSquares.push([possibleColumn,possibleRow]);
             }
@@ -284,6 +295,11 @@ class Rook extends Piece{
         while ((insideBoard) && !isACapture(colorPiece, possibleColumn, possibleRow)){
             possibleRow += 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
+
+            if (isFriendlyPiece(colorPiece, possibleColumn, possibleRow)){
+                break;
+            }
+
             if (insideBoard){
                 legalSquares.push([possibleColumn,possibleRow]);
             }
@@ -296,6 +312,11 @@ class Rook extends Piece{
         while ((insideBoard) && !isACapture(colorPiece, possibleColumn, possibleRow)){
             possibleRow -= 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
+
+            if (isFriendlyPiece(colorPiece, possibleColumn, possibleRow)){
+                break;
+            }
+
             if (insideBoard){
                 legalSquares.push([possibleColumn,possibleRow]);
             }
@@ -393,6 +414,29 @@ function isInsideBoard(column: number, row: number): boolean{
     }
     else{ 
         return false
+    }
+}
+
+function isFriendlyPiece(color: Colors | undefined, column: number, row: number): boolean{
+    
+    if (isInsideBoard(column, row)){
+        let currentPieceInSquare : Piece | null = tableState[column][row].piece;
+        if(color == Colors.white){
+            return currentPieceInSquare?.color == Colors.white? true : false;
+        }
+
+        else if(color == Colors.black){
+            console.log('currentPieceInSquare')
+            return currentPieceInSquare?.color == Colors.black? true : false;
+        }
+
+        else {
+            return false;
+        }
+    }
+
+    else{
+        return false;
     }
 }
 

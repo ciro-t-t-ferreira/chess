@@ -1,5 +1,6 @@
 "use strict";
 /*
+To do: disallow pieces from go through other pieces
 
 Bug: when I click, consecutively (?) pieces of the same color it adds the legal moves
 
@@ -219,6 +220,9 @@ class Rook extends Piece {
         while ((insideBoard) && !isACapture(colorPiece, possibleColumn, possibleRow)) {
             possibleColumn += 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
+            if (isFriendlyPiece(colorPiece, possibleColumn, possibleRow)) {
+                break;
+            }
             if (insideBoard) {
                 legalSquares.push([possibleColumn, possibleRow]);
             }
@@ -229,6 +233,9 @@ class Rook extends Piece {
         while ((insideBoard) && !isACapture(colorPiece, possibleColumn, possibleRow)) {
             possibleColumn -= 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
+            if (isFriendlyPiece(colorPiece, possibleColumn, possibleRow)) {
+                break;
+            }
             if (insideBoard) {
                 legalSquares.push([possibleColumn, possibleRow]);
             }
@@ -239,6 +246,9 @@ class Rook extends Piece {
         while ((insideBoard) && !isACapture(colorPiece, possibleColumn, possibleRow)) {
             possibleRow += 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
+            if (isFriendlyPiece(colorPiece, possibleColumn, possibleRow)) {
+                break;
+            }
             if (insideBoard) {
                 legalSquares.push([possibleColumn, possibleRow]);
             }
@@ -249,6 +259,9 @@ class Rook extends Piece {
         while ((insideBoard) && !isACapture(colorPiece, possibleColumn, possibleRow)) {
             possibleRow -= 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
+            if (isFriendlyPiece(colorPiece, possibleColumn, possibleRow)) {
+                break;
+            }
             if (insideBoard) {
                 legalSquares.push([possibleColumn, possibleRow]);
             }
@@ -315,6 +328,24 @@ class King extends Piece {
 function isInsideBoard(column, row) {
     if ((0 <= column && column <= 7) && (0 <= row && row <= 7)) {
         return true;
+    }
+    else {
+        return false;
+    }
+}
+function isFriendlyPiece(color, column, row) {
+    if (isInsideBoard(column, row)) {
+        let currentPieceInSquare = tableState[column][row].piece;
+        if (color == Colors.white) {
+            return (currentPieceInSquare === null || currentPieceInSquare === void 0 ? void 0 : currentPieceInSquare.color) == Colors.white ? true : false;
+        }
+        else if (color == Colors.black) {
+            console.log('currentPieceInSquare');
+            return (currentPieceInSquare === null || currentPieceInSquare === void 0 ? void 0 : currentPieceInSquare.color) == Colors.black ? true : false;
+        }
+        else {
+            return false;
+        }
     }
     else {
         return false;
