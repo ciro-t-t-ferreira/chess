@@ -63,6 +63,7 @@ class Pawn extends Piece {
     static legalMoves(square) {
         var _a;
         let legalSquares = [];
+        let possibleCaptures = [];
         let colorPiece = (_a = square.piece) === null || _a === void 0 ? void 0 : _a.color;
         let column = square.column;
         let row = square.row;
@@ -81,6 +82,8 @@ class Pawn extends Piece {
                     isInsideBoard(column, row + 1) ? legalSquares.push([column, row + 1]) : undefined;
                 }
             }
+            possibleCaptures = this.possibleCaptures(colorPiece, column, row);
+            legalSquares = legalSquares.concat(possibleCaptures);
         }
         if (colorPiece == Colors.black) {
             if (row == 6) {
@@ -97,11 +100,44 @@ class Pawn extends Piece {
                     isInsideBoard(column, row - 1) ? legalSquares.push([column, row - 1]) : undefined;
                 }
             }
+            possibleCaptures = this.possibleCaptures(colorPiece, column, row);
+            legalSquares = legalSquares.concat(possibleCaptures);
         }
         return legalSquares;
     }
     legalMoves(square) {
         return Pawn.legalMoves(square);
+    }
+    static possibleCaptures(color, column, row) {
+        let captureSquares = [];
+        let possibleColumn = null;
+        let possibleRow = null;
+        if (color == Colors.white) {
+            possibleColumn = column + 1;
+            possibleRow = row + 1;
+            if (isACapture(color, possibleColumn, possibleRow)) {
+                captureSquares.push([possibleColumn, possibleRow]);
+            }
+            possibleColumn = column - 1;
+            possibleRow = row + 1;
+            if (isACapture(color, possibleColumn, possibleRow)) {
+                captureSquares.push([possibleColumn, possibleRow]);
+            }
+            return captureSquares;
+        }
+        else {
+            possibleColumn = column + 1;
+            possibleRow = row - 1;
+            if (isACapture(color, possibleColumn, possibleRow)) {
+                captureSquares.push([possibleColumn, possibleRow]);
+            }
+            possibleColumn = column - 1;
+            possibleRow = row - 1;
+            if (isACapture(color, possibleColumn, possibleRow)) {
+                captureSquares.push([possibleColumn, possibleRow]);
+            }
+            return captureSquares;
+        }
     }
 }
 class Knight extends Piece {
@@ -354,7 +390,6 @@ function isFriendlyPiece(color, column, row) {
             return (currentPieceInSquare === null || currentPieceInSquare === void 0 ? void 0 : currentPieceInSquare.color) == Colors.white ? true : false;
         }
         else if (color == Colors.black) {
-            console.log('currentPieceInSquare');
             return (currentPieceInSquare === null || currentPieceInSquare === void 0 ? void 0 : currentPieceInSquare.color) == Colors.black ? true : false;
         }
         else {
@@ -366,17 +401,19 @@ function isFriendlyPiece(color, column, row) {
     }
 }
 function isACapture(color, column, row) {
-    let currentPieceInSquare = tableState[column][row].piece;
-    if (color == Colors.white) {
-        return (currentPieceInSquare === null || currentPieceInSquare === void 0 ? void 0 : currentPieceInSquare.color) == Colors.black ? true : false;
+    if (isInsideBoard(column, row)) {
+        let currentPieceInSquare = tableState[column][row].piece;
+        if (color == Colors.white) {
+            return (currentPieceInSquare === null || currentPieceInSquare === void 0 ? void 0 : currentPieceInSquare.color) == Colors.black ? true : false;
+        }
+        else if (color == Colors.black) {
+            return (currentPieceInSquare === null || currentPieceInSquare === void 0 ? void 0 : currentPieceInSquare.color) == Colors.white ? true : false;
+        }
+        else {
+            return false;
+        }
     }
-    else if (color == Colors.black) {
-        console.log('currentPieceInSquare');
-        return (currentPieceInSquare === null || currentPieceInSquare === void 0 ? void 0 : currentPieceInSquare.color) == Colors.white ? true : false;
-    }
-    else {
-        return false;
-    }
+    return false;
 }
 //Responsible for verifying if there is a Piece in the square to be moved,
 //and for making sure that a piece will disapear in a square and apear in another
