@@ -191,6 +191,11 @@ class Bishop extends Piece{
             possibleColumn += 1;
             possibleRow += 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
+
+            if (isFriendlyPiece(colorPiece, possibleColumn, possibleRow)){
+                break;
+            }
+
             if (insideBoard){
                 legalSquares.push([possibleColumn,possibleRow]);
             }
@@ -204,6 +209,11 @@ class Bishop extends Piece{
             possibleColumn -= 1;
             possibleRow -= 1;
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
+
+            if (isFriendlyPiece(colorPiece, possibleColumn, possibleRow)){
+                break;
+            }
+
             if (insideBoard){
                 legalSquares.push([possibleColumn,possibleRow]);
             }
@@ -217,6 +227,11 @@ class Bishop extends Piece{
             possibleColumn += 1
             possibleRow -= 1;            
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
+
+            if (isFriendlyPiece(colorPiece, possibleColumn, possibleRow)){
+                break;
+            }
+
             if (insideBoard){
                 legalSquares.push([possibleColumn,possibleRow]);
             }
@@ -230,6 +245,11 @@ class Bishop extends Piece{
             possibleColumn -= 1
             possibleRow += 1; 
             insideBoard = isInsideBoard(possibleColumn, possibleRow);
+
+            if (isFriendlyPiece(colorPiece, possibleColumn, possibleRow)){
+                break;
+            }
+
             if (insideBoard){
                 legalSquares.push([possibleColumn,possibleRow]);
             }
