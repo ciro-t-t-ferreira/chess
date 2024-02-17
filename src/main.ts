@@ -94,7 +94,7 @@ class Pawn extends Piece{
             }
 
             else{
-                //can the isInsideBoard check this when I implement promotion
+                //can delete the isInsideBoard check when I implement promotion
                 if (tableState[column][row + 1].piece == null){
                 isInsideBoard(column, row + 1)? legalSquares.push([column, row + 1]) : undefined;
                 }
@@ -114,7 +114,7 @@ class Pawn extends Piece{
             }
 
             else{
-                //can the isInsideBoard check this when I implement promotion
+                //can delete the isInsideBoard check when I implement promotion
                 if (tableState[column][row - 1].piece == null){
                 isInsideBoard(column, row - 1)? legalSquares.push([column, row - 1]) : undefined;
                 }
@@ -375,48 +375,58 @@ class King extends Piece{
         let legalSquares: [number , number][] = [] ;
         let column = square.column;
         let row = square.row;
+        let colorPiece = square.piece?.color;
+
 
         let possibleColumn: number;
         let possibleRow:number;
 
         possibleColumn = column + 1;
         possibleRow = row;
-        isInsideBoard(possibleColumn, possibleRow)? legalSquares.push(
+        (isInsideBoard(possibleColumn, possibleRow) && !isFriendlyPiece(colorPiece, possibleColumn,
+            possibleRow))? legalSquares.push(
             [possibleColumn, possibleRow]): undefined;  
         
         possibleColumn = column - 1;
         possibleRow = row;
-        isInsideBoard(possibleColumn, possibleRow)? legalSquares.push(
+        (isInsideBoard(possibleColumn, possibleRow) && !isFriendlyPiece(colorPiece, possibleColumn,
+            possibleRow))? legalSquares.push(
             [possibleColumn, possibleRow]): undefined;
         
         possibleColumn = column;
         possibleRow = row + 1;
-        isInsideBoard(possibleColumn, possibleRow)? legalSquares.push(
+        (isInsideBoard(possibleColumn, possibleRow) && !isFriendlyPiece(colorPiece, possibleColumn,
+            possibleRow))? legalSquares.push(
             [possibleColumn, possibleRow]): undefined;
         
         possibleColumn = column;
         possibleRow = row -1;
-        isInsideBoard(possibleColumn, possibleRow)? legalSquares.push(
+        (isInsideBoard(possibleColumn, possibleRow) && !isFriendlyPiece(colorPiece, possibleColumn,
+            possibleRow))? legalSquares.push(
             [possibleColumn, possibleRow]): undefined;
 
         possibleColumn = column + 1;
         possibleRow = row + 1;
-        isInsideBoard(possibleColumn, possibleRow)? legalSquares.push(
+        (isInsideBoard(possibleColumn, possibleRow) && !isFriendlyPiece(colorPiece, possibleColumn,
+            possibleRow))? legalSquares.push(
             [possibleColumn, possibleRow]): undefined;
 
         possibleColumn = column - 1;
         possibleRow = row - 1;
-        isInsideBoard(possibleColumn, possibleRow)? legalSquares.push(
+        (isInsideBoard(possibleColumn, possibleRow) && !isFriendlyPiece(colorPiece, possibleColumn,
+            possibleRow))? legalSquares.push(
             [possibleColumn, possibleRow]): undefined;
 
         possibleColumn = column + 1;
         possibleRow = row - 1;
-        isInsideBoard(possibleColumn, possibleRow)? legalSquares.push(
+        (isInsideBoard(possibleColumn, possibleRow) && !isFriendlyPiece(colorPiece, possibleColumn,
+            possibleRow))? legalSquares.push(
             [possibleColumn, possibleRow]): undefined;
 
         possibleColumn = column - 1;
         possibleRow = row + 1;
-        isInsideBoard(possibleColumn, possibleRow)? legalSquares.push(
+        (isInsideBoard(possibleColumn, possibleRow) && !isFriendlyPiece(colorPiece, possibleColumn,
+            possibleRow))? legalSquares.push(
             [possibleColumn, possibleRow]): undefined;    
             
         return legalSquares;
