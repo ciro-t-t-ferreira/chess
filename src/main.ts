@@ -191,29 +191,45 @@ class Knight extends Piece{
         let row = square.row;
         let colorPiece = square.piece?.color;
 
-        if (colorPiece != tableState[column + 2][row + 1].piece?.color){
-            isInsideBoard(column + 2, row + 1)? legalSquares.push([column + 2, row + 1]) : undefined;
+        if (isInsideBoard(column + 2, row + 1)){
+            if (colorPiece != tableState[column + 2][row + 1]?.piece?.color){
+                legalSquares.push([column + 2, row + 1]);
+            }
         }
-        if (colorPiece != tableState[column + 2][row - 1].piece?.color){
-            isInsideBoard(column + 2, row - 1)? legalSquares.push([column + 2, row - 1]) : undefined;
+        if (isInsideBoard(column + 2, row - 1)){
+            if (colorPiece != tableState[column + 2][row - 1]?.piece?.color){
+                legalSquares.push([column + 2, row - 1]);
+            }
         }
-        if (colorPiece != tableState[column - 2][row + 1].piece?.color){        
-            isInsideBoard(column - 2, row + 1)? legalSquares.push([column - 2, row + 1]) : undefined;
+        if (isInsideBoard(column - 2, row + 1)){
+            if (colorPiece != tableState[column - 2][row + 1]?.piece?.color){        
+                legalSquares.push([column - 2, row + 1]);
+            }
         }
-        if (colorPiece != tableState[column -2][row - 1].piece?.color){
-            isInsideBoard(column - 2, row - 1)? legalSquares.push([column - 2, row - 1]) : undefined;
+        if (isInsideBoard(column - 2, row - 1)){
+            if (colorPiece != tableState[column -2][row - 1]?.piece?.color){
+                legalSquares.push([column - 2, row - 1]);
+            }
         }
-        if (colorPiece != tableState[column + 1][row + 2].piece?.color){
-            isInsideBoard(column + 1, row + 2)? legalSquares.push([column + 1, row + 2]) : undefined;
+        if (isInsideBoard(column + 1, row + 2)){
+            if (colorPiece != tableState[column + 1][row + 2]?.piece?.color){
+                legalSquares.push([column + 1, row + 2]);
+            }
         }
-        if (colorPiece != tableState[column + 1][row - 2].piece?.color){        
-            isInsideBoard(column + 1, row - 2)? legalSquares.push([column + 1, row - 2]) : undefined;
+        if (isInsideBoard(column + 1, row - 2)){
+            if (colorPiece != tableState[column + 1][row - 2]?.piece?.color){        
+                legalSquares.push([column + 1, row - 2]);
+            }
         }
-        if (colorPiece != tableState[column - 1][row + 2].piece?.color){        
-            isInsideBoard(column - 1, row + 2)? legalSquares.push([column - 1, row + 2]) : undefined;
+        if (isInsideBoard(column - 1, row + 2)){
+            if (colorPiece != tableState[column - 1][row + 2]?.piece?.color){        
+                legalSquares.push([column - 1, row + 2]);
+            }
         }
-        if (colorPiece != tableState[column - 1][row - 2].piece?.color){
-            isInsideBoard(column - 1, row - 2)? legalSquares.push([column - 1, row - 2]) : undefined;
+        if (isInsideBoard(column - 1, row - 2)){
+            if (colorPiece != tableState[column - 1][row - 2]?.piece?.color){
+                legalSquares.push([column - 1, row - 2]);
+            }
         }
 
         return legalSquares;
