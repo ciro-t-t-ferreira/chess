@@ -519,14 +519,6 @@ function initializePieces() {
     let whiteKing = new King(Colors.white);
     tableState[4][0].createPiece(whiteKing);
 }
-/*
-    Player clicks square
-    HTML square verifies pieces present in the square
-        by checking tableState[column][row]
-    Model obtains the square and runs logic by the
-        Piece in the abstract
-
-*/
 //****** CONTROLLER ********
 function getIdByCoordinates(column, row) {
     return columnDictionary[column] + (row + 1).toString();
@@ -579,6 +571,7 @@ function squareClick(id) {
         legalMoveList.push(square.id);
     }
     if ((piece === null || piece === void 0 ? void 0 : piece.color) == turn) {
+        eraseAllLegalMoves();
         showLegalMoves(piece, square);
         selectedSquare = square;
         selectedPiece = piece;

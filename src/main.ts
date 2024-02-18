@@ -671,15 +671,6 @@ function initializePieces(){
 
 }
 
-/*
-    Player clicks square
-    HTML square verifies pieces present in the square
-        by checking tableState[column][row]
-    Model obtains the square and runs logic by the 
-        Piece in the abstract
-
-*/
-
 //****** CONTROLLER ********
 
 function getIdByCoordinates(column: number, row: number):string{
@@ -749,6 +740,7 @@ function squareClick(id: string){
     }
     
     if (piece?.color == turn){
+        eraseAllLegalMoves();
         showLegalMoves(piece, square);
         selectedSquare = square;
         selectedPiece = piece;        
