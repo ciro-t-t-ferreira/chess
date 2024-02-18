@@ -578,23 +578,80 @@ initializePieces();
 
 function initializePieces(){
     
-    let blackPawn = new Pawn(Colors.black);
-    tableState[0][6].createPiece(blackPawn);
+    let blackPawnA = new Pawn(Colors.black);
+    tableState[0][6].createPiece(blackPawnA);
+    let blackPawnB = new Pawn(Colors.black);
+    tableState[1][6].createPiece(blackPawnB);
+    let blackPawnC = new Pawn(Colors.black);
+    tableState[2][6].createPiece(blackPawnC);
+    let blackPawnD = new Pawn(Colors.black);
+    tableState[3][6].createPiece(blackPawnD);
+    let blackPawnE = new Pawn(Colors.black);
+    tableState[4][6].createPiece(blackPawnE);
+    let blackPawnF = new Pawn(Colors.black);
+    tableState[5][6].createPiece(blackPawnF);
+    let blackPawnG = new Pawn(Colors.black);
+    tableState[6][6].createPiece(blackPawnG);
+    let blackPawnH = new Pawn(Colors.black);
+    tableState[7][6].createPiece(blackPawnH);
 
-    let whiteKing = new King(Colors.white);
-    tableState[4][2].createPiece(whiteKing);
+    let blackRookA = new Rook(Colors.black);
+    tableState[0][7].createPiece(blackRookA);
+    let blackRookH = new Rook(Colors.black);
+    tableState[7][7].createPiece(blackRookH);
 
-    let whiteKnight = new Knight(Colors.white);
-    tableState[4][4].createPiece(whiteKnight);
+    let blackKnightB = new Knight(Colors.black);
+    tableState[1][7].createPiece(blackKnightB);
+    let blackKnightG = new Knight(Colors.black);
+    tableState[6][7].createPiece(blackKnightG);
+
+    let blackBishopC = new Bishop(Colors.black);
+    tableState[2][7].createPiece(blackBishopC);
+    let blackBishopF = new Bishop(Colors.black);
+    tableState[5][7].createPiece(blackBishopF);
+
+    let blackQueen = new Queen(Colors.black);
+    tableState[3][7].createPiece(blackQueen);
+    let blackKing = new King(Colors.black);
+    tableState[4][7].createPiece(blackKing);
+
+    
+    let whitePawnA = new Pawn(Colors.white);
+    tableState[0][1].createPiece(whitePawnA);
+    let whitePawnB = new Pawn(Colors.white);
+    tableState[1][1].createPiece(whitePawnB);
+    let whitePawnC = new Pawn(Colors.white);
+    tableState[2][1].createPiece(whitePawnC);
+    let whitePawnD = new Pawn(Colors.white);
+    tableState[3][1].createPiece(whitePawnD);
+    let whitePawnE = new Pawn(Colors.white);
+    tableState[4][1].createPiece(whitePawnE);
+    let whitePawnF = new Pawn(Colors.white);
+    tableState[5][1].createPiece(whitePawnF);
+    let whitePawnG = new Pawn(Colors.white);
+    tableState[6][1].createPiece(whitePawnG);
+    let whitePawnH = new Pawn(Colors.white);
+    tableState[7][1].createPiece(whitePawnH);
+
+    let whiteRookA = new Rook(Colors.white);
+    tableState[0][0].createPiece(whiteRookA);
+    let whiteRookH = new Rook(Colors.white);
+    tableState[7][0].createPiece(whiteRookH);
+
+    let whiteKnightB = new Knight(Colors.white);
+    tableState[1][0].createPiece(whiteKnightB);
+    let whiteKnightG = new Knight(Colors.white);
+    tableState[6][0].createPiece(whiteKnightG);
+
+    let whiteBishopC = new Bishop(Colors.white);
+    tableState[2][0].createPiece(whiteBishopC);
+    let whiteBishopF = new Bishop(Colors.white);
+    tableState[5][0].createPiece(whiteBishopF);
 
     let whiteQueen = new Queen(Colors.white);
-    tableState[3][3].createPiece(whiteQueen);
-
-    let whiteRook = new Rook(Colors.white);
-    tableState[0][1].createPiece(whiteRook);
-
-    let whiteBishop = new Bishop(Colors.white);
-    tableState[2][3].createPiece(whiteBishop);
+    tableState[3][0].createPiece(whiteQueen);
+    let whiteKing = new King(Colors.white);
+    tableState[4][0].createPiece(whiteKing);
 
 }
 
