@@ -1,8 +1,13 @@
 "use strict";
 /*
-To do: disallow pieces from go through other pieces
-
-Bug: when I click, consecutively (?) pieces of the same color it adds the legal moves
+To do:
+    -En passent
+    -Castle
+    -Check for check
+    -End game on check mate
+    -Put Castle and En passent on FEN
+    -Put "loading" icon in stockfish suggestions while loading
+    -Complete the standard notation for exception cases
 
 Refat:
     -Distribute the code through more files (model, controler, constants)
@@ -446,8 +451,6 @@ function movePiece(piece, fromSquare, toSquare) {
     if (fromSquare.piece == piece) {
         toSquare.createPiece(piece);
         fromSquare.destructPiece(); //needs to be changed to match the new functions in Square
-        let fen = generateFEN();
-        makeRequest(fen);
     }
     else {
         throw new Error("Specified piece not found in Square");
@@ -592,6 +595,8 @@ function squareClick(id) {
         movePiece(selectedPiece, selectedSquare, square);
         eraseAllLegalMoves();
         changeTurn();
+        let fen = generateFEN();
+        makeRequest(fen);
     }
     else {
         selectedSquare = null;
@@ -649,6 +654,14 @@ const FENDictionary = {
     Queen: 'q',
     King: 'k'
 };
+const StandardNotationDictionary = {
+    Pawn: '',
+    Knight: 'N',
+    Bishop: 'B',
+    Rook: 'R',
+    Queen: 'Q',
+    King: 'K'
+};
 function generateFEN() {
     var _a, _b;
     let fen = '';
@@ -671,6 +684,12 @@ function generateFEN() {
         emptySquares = 0;
         (i != 0) ? (fen = fen + '/') : undefined;
     }
+    if (turn == 0) {
+        fen = fen + ' w';
+    }
+    else {
+        fen = fen + ' b';
+    }
     return fen;
 }
 //request to the API
@@ -690,11 +709,43 @@ function makeRequest(fen) {
         };
         try {
             const response = yield fetch(url, options);
-            const result = yield response.text();
-            console.log(result);
+            const result = yield response.json();
+            fillStockFishSuggestionsOnScreen(result);
+            console.log(result.bestmove);
+            console.log(result.ponder);
+            console.log(result.depth);
         }
         catch (error) {
             console.error(error);
         }
     });
+}
+function fillStockFishSuggestionsOnScreen(result) {
+    let bestMove = document.getElementById('bestMove');
+    let ponder = document.getElementById('ponder');
+    let depth = document.getElementById('depth');
+    console.log(result.position);
+    if (bestMove) {
+        console.log('bestMove:' + result.bestmove);
+        bestMove.innerHTML = StockFishNotationToStandard(result.bestmove);
+    }
+    if (ponder) {
+        console.log('ponder:' + result.ponder);
+        ponder.innerHTML = StockFishNotationToStandard(result.ponder);
+    }
+    if (depth) {
+        depth.innerHTML = result.depth.toString();
+    }
+}
+function StockFishNotationToStandard(sfnotation) {
+    var _a;
+    let notation = '';
+    let fromColumn = columnDictionaryReverse[sfnotation[0]];
+    let fromRow = parseInt(sfnotation[1], 10) - 1;
+    let pieceKind = (_a = (tableState[fromColumn][fromRow].piece)) === null || _a === void 0 ? void 0 : _a.constructor.name;
+    if (pieceKind != undefined) {
+        let pieceNotation = StandardNotationDictionary[pieceKind];
+        notation = pieceNotation + sfnotation[2] + sfnotation[3];
+    }
+    return notation;
 }

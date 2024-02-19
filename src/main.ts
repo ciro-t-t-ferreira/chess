@@ -1,7 +1,12 @@
 /*
-To do: disallow pieces from go through other pieces
-
-Bug: when I click, consecutively (?) pieces of the same color it adds the legal moves
+To do: 
+    -En passent
+    -Castle
+    -Check for check
+    -End game on check mate
+    -Put Castle and En passent on FEN
+    -Put "loading" icon in stockfish suggestions while loading
+    -Complete the standard notation for exception cases
 
 Refat: 
     -Distribute the code through more files (model, controler, constants) 
@@ -565,8 +570,7 @@ function movePiece(piece: Piece, fromSquare: Squares, toSquare: Squares){
     if (fromSquare.piece == piece){
         toSquare.createPiece(piece);
         fromSquare.destructPiece(); //needs to be changed to match the new functions in Square
-        let fen: string = generateFEN();
-        makeRequest(fen);
+        
     }
     else{
         throw new Error("Specified piece not found in Square");
@@ -753,6 +757,8 @@ function squareClick(id: string){
         movePiece(selectedPiece, selectedSquare, square);
         eraseAllLegalMoves();
         changeTurn();
+        let fen: string = generateFEN();
+        makeRequest(fen);
     }    
 
     else{
@@ -828,6 +834,15 @@ const FENDictionary: { [key: string]: string } = {
     King  : 'k'
 };
 
+const StandardNotationDictionary: { [key: string]: string } = {
+    Pawn  : '' ,
+    Knight: 'N',
+    Bishop: 'B',
+    Rook  : 'R',
+    Queen : 'Q',
+    King  : 'K'
+};
+
 function generateFEN(): string{
     let fen         : string = '';
     let emptySquares: number = 0;
@@ -854,6 +869,13 @@ function generateFEN(): string{
         (i != 0)? (fen = fen + '/') : undefined;
     }
 
+    if (turn == 0){
+        fen = fen + ' w';
+    }
+    else{
+        fen = fen + ' b';
+    }
+
     return fen
 }
 
@@ -874,9 +896,49 @@ async function makeRequest(fen: string){
     };
     try {
     	const response = await fetch(url, options);
-    	const result = await response.text();
-    	console.log(result);
+    	const result = await response.json();
+
+        fillStockFishSuggestionsOnScreen(result);
+    	console.log(result.bestmove);
+    	console.log(result.ponder);
+    	console.log(result.depth);
     } catch (error) {
     	console.error(error);
     }
+}
+
+function fillStockFishSuggestionsOnScreen(result: any){
+    
+    let bestMove: HTMLElement | null = document.getElementById('bestMove');
+    let ponder  : HTMLElement | null = document.getElementById('ponder');
+    let depth   : HTMLElement | null = document.getElementById('depth');
+        
+    console.log(result.position);
+    if (bestMove) {
+        console.log('bestMove:' + result.bestmove)
+        bestMove.innerHTML = StockFishNotationToStandard(result.bestmove);
+    }
+    if (ponder) {
+        console.log('ponder:' + result.ponder)
+        ponder.innerHTML = StockFishNotationToStandard(result.ponder);
+    }
+    if (depth) {
+        depth.innerHTML = result.depth.toString();
+    }
+
+}
+
+function StockFishNotationToStandard(sfnotation : string): string{
+    let notation: string = '';
+    
+    let fromColumn : number = columnDictionaryReverse[sfnotation[0]] ;
+    let fromRow    : number = parseInt(sfnotation[1], 10) - 1;
+    let pieceKind  : string | undefined = (tableState[fromColumn][fromRow].piece)?.constructor.name
+
+    if (pieceKind != undefined){
+        let pieceNotation: string = StandardNotationDictionary[pieceKind];
+        notation = pieceNotation + sfnotation[2] + sfnotation[3]
+    }
+
+    return notation;
 }

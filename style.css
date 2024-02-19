@@ -2,6 +2,7 @@ table {
     border-collapse: collapse;
     margin: 0 auto; /* Set left and right margins to auto */
     margin-top: 50px;
+    display: inline;
 }
 td {
     width: 100px;
