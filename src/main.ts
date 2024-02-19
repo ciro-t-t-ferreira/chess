@@ -565,7 +565,8 @@ function movePiece(piece: Piece, fromSquare: Squares, toSquare: Squares){
     if (fromSquare.piece == piece){
         toSquare.createPiece(piece);
         fromSquare.destructPiece(); //needs to be changed to match the new functions in Square
-        generateFEM();
+        let fen: string = generateFEN();
+        makeRequest(fen);
     }
     else{
         throw new Error("Specified piece not found in Square");
@@ -818,7 +819,7 @@ function eraseAllLegalMoves(){
     
 }
 
-const FEMDictionary: { [key: string]: string } = {
+const FENDictionary: { [key: string]: string } = {
     Pawn  : 'p',
     Knight: 'n',
     Bishop: 'b',
@@ -827,8 +828,8 @@ const FEMDictionary: { [key: string]: string } = {
     King  : 'k'
 };
 
-function generateFEM(): string{
-    let fem         : string = '';
+function generateFEN(): string{
+    let fen         : string = '';
     let emptySquares: number = 0;
     
     for (let i = 7 ; i >= 0 ; i--){
@@ -838,21 +839,44 @@ function generateFEM(): string{
 
             if (kind != undefined){
                 
-                fem = (emptySquares != 0)? (fem + emptySquares.toString()) : fem;
+                fen = (emptySquares != 0)? (fen + emptySquares.toString()) : fen;
                 emptySquares = 0;
-                fem = fem + ((color == 0)? FEMDictionary[kind].toUpperCase() : FEMDictionary[kind]);
-                //why can't I call a function to do that and persist the value of fem?
+                fen = fen + ((color == 0)? FENDictionary[kind].toUpperCase() : FENDictionary[kind]);
+                //why can't I call a function to do that and persist the value of fen?
             }
 
             else{
                 emptySquares += 1;
             }
         }
-        fem = (emptySquares != 0)? (fem + emptySquares.toString()) : fem;
+        fen = (emptySquares != 0)? (fen + emptySquares.toString()) : fen;
         emptySquares = 0;
-        (i != 0)? (fem = fem + '/') : undefined;
+        (i != 0)? (fen = fen + '/') : undefined;
     }
-    console.log(fem)
 
-    return fem
+    return fen
+}
+
+//request to the API
+
+async function makeRequest(fen: string){
+    const url = 'https://chess-stockfish-16-api.p.rapidapi.com/chess/api';
+    const options = {
+    	method: 'POST',
+    	headers: {
+    		'content-type': 'application/x-www-form-urlencoded',
+    		'X-RapidAPI-Key': '1bfe468b8fmsh2ad07edae9618a2p14094ejsnb8b0e5250c65',
+    		'X-RapidAPI-Host': 'chess-stockfish-16-api.p.rapidapi.com'
+    	},
+    	body: new URLSearchParams({
+    		fen
+    	})
+    };
+    try {
+    	const response = await fetch(url, options);
+    	const result = await response.text();
+    	console.log(result);
+    } catch (error) {
+    	console.error(error);
+    }
 }

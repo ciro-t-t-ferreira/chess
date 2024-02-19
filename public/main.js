@@ -10,6 +10,15 @@ Refat:
     -I created a reverse dictionary to access the keys through the values, which is kinda ridiculous, it must be a
         more reasonable way to do that
 */
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 const columnDictionary = {
     0: 'a',
     1: 'b',
@@ -437,7 +446,8 @@ function movePiece(piece, fromSquare, toSquare) {
     if (fromSquare.piece == piece) {
         toSquare.createPiece(piece);
         fromSquare.destructPiece(); //needs to be changed to match the new functions in Square
-        generateFEM();
+        let fen = generateFEN();
+        makeRequest(fen);
     }
     else {
         throw new Error("Specified piece not found in Square");
@@ -631,7 +641,7 @@ function eraseAllLegalMoves() {
         legalSquares.classList.remove('legalMove');
     });
 }
-const FEMDictionary = {
+const FENDictionary = {
     Pawn: 'p',
     Knight: 'n',
     Bishop: 'b',
@@ -639,28 +649,52 @@ const FEMDictionary = {
     Queen: 'q',
     King: 'k'
 };
-function generateFEM() {
+function generateFEN() {
     var _a, _b;
-    let fem = '';
+    let fen = '';
     let emptySquares = 0;
     for (let i = 7; i >= 0; i--) {
         for (let j = 0; j <= 7; j++) {
             let kind = (_a = (tableState[j][i].piece)) === null || _a === void 0 ? void 0 : _a.constructor.name;
             let color = (_b = (tableState[j][i].piece)) === null || _b === void 0 ? void 0 : _b.color;
             if (kind != undefined) {
-                fem = (emptySquares != 0) ? (fem + emptySquares.toString()) : fem;
+                fen = (emptySquares != 0) ? (fen + emptySquares.toString()) : fen;
                 emptySquares = 0;
-                fem = fem + ((color == 0) ? FEMDictionary[kind].toUpperCase() : FEMDictionary[kind]);
-                //why can't I call a function to do that and persist the value of fem?
+                fen = fen + ((color == 0) ? FENDictionary[kind].toUpperCase() : FENDictionary[kind]);
+                //why can't I call a function to do that and persist the value of fen?
             }
             else {
                 emptySquares += 1;
             }
         }
-        fem = (emptySquares != 0) ? (fem + emptySquares.toString()) : fem;
+        fen = (emptySquares != 0) ? (fen + emptySquares.toString()) : fen;
         emptySquares = 0;
-        (i != 0) ? (fem = fem + '/') : undefined;
+        (i != 0) ? (fen = fen + '/') : undefined;
     }
-    console.log(fem);
-    return fem;
+    return fen;
+}
+//request to the API
+function makeRequest(fen) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const url = 'https://chess-stockfish-16-api.p.rapidapi.com/chess/api';
+        const options = {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded',
+                'X-RapidAPI-Key': '1bfe468b8fmsh2ad07edae9618a2p14094ejsnb8b0e5250c65',
+                'X-RapidAPI-Host': 'chess-stockfish-16-api.p.rapidapi.com'
+            },
+            body: new URLSearchParams({
+                fen
+            })
+        };
+        try {
+            const response = yield fetch(url, options);
+            const result = yield response.text();
+            console.log(result);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    });
 }
