@@ -437,6 +437,7 @@ function movePiece(piece, fromSquare, toSquare) {
     if (fromSquare.piece == piece) {
         toSquare.createPiece(piece);
         fromSquare.destructPiece(); //needs to be changed to match the new functions in Square
+        generateFEM();
     }
     else {
         throw new Error("Specified piece not found in Square");
@@ -629,4 +630,37 @@ function eraseAllLegalMoves() {
     legalSquares.forEach(legalSquares => {
         legalSquares.classList.remove('legalMove');
     });
+}
+const FEMDictionary = {
+    Pawn: 'p',
+    Knight: 'n',
+    Bishop: 'b',
+    Rook: 'r',
+    Queen: 'q',
+    King: 'k'
+};
+function generateFEM() {
+    var _a, _b;
+    let fem = '';
+    let emptySquares = 0;
+    for (let i = 7; i >= 0; i--) {
+        for (let j = 0; j <= 7; j++) {
+            let kind = (_a = (tableState[j][i].piece)) === null || _a === void 0 ? void 0 : _a.constructor.name;
+            let color = (_b = (tableState[j][i].piece)) === null || _b === void 0 ? void 0 : _b.color;
+            if (kind != undefined) {
+                fem = (emptySquares != 0) ? (fem + emptySquares.toString()) : fem;
+                emptySquares = 0;
+                fem = fem + ((color == 0) ? FEMDictionary[kind].toUpperCase() : FEMDictionary[kind]);
+                //why can't I call a function to do that and persist the value of fem?
+            }
+            else {
+                emptySquares += 1;
+            }
+        }
+        fem = (emptySquares != 0) ? (fem + emptySquares.toString()) : fem;
+        emptySquares = 0;
+        (i != 0) ? (fem = fem + '/') : undefined;
+    }
+    console.log(fem);
+    return fem;
 }
