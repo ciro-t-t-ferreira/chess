@@ -77,6 +77,7 @@ class Squares {
     }
 }
 let halfMoveList = [];
+let FENlist = [];
 class HalfMove {
     constructor(piece, fromSquare, toSquare) {
         this.piece = piece;
@@ -85,11 +86,27 @@ class HalfMove {
         this.registerHalfMove();
         changeTurn();
         let fen = generateFEN();
+        this.registerFEN(fen);
+        this.checksThreeFoldRepetition();
         makeRequest(fen);
     }
     registerHalfMove() {
         halfMoveList.push(this);
-        console.log(halfMoveList);
+    }
+    registerFEN(fen) {
+        FENlist.push(fen);
+    }
+    checksThreeFoldRepetition() {
+        let repetitionCount = 0;
+        for (let state of FENlist) {
+            console.log(FENlist[FENlist.length - 1]);
+            if (state == FENlist[FENlist.length - 1]) {
+                repetitionCount += 1;
+            }
+        }
+        if (repetitionCount >= 3) {
+            window.alert('Tie by Threefold repetition');
+        }
     }
 }
 class Piece {

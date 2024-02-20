@@ -80,6 +80,7 @@ class Squares{
 }
 
 let halfMoveList: HalfMove[] = [];
+let FENlist: String[] = [];
 class HalfMove{ 
     public piece      : Piece  ;
     public fromSquare : Squares;
@@ -93,13 +94,36 @@ class HalfMove{
         this.registerHalfMove();
         changeTurn();                  
 
-        let fen: string = generateFEN(); 
+        let fen: string = generateFEN();
+        this.registerFEN(fen);
+        this.checksThreeFoldRepetition(); 
         makeRequest(fen); 
     }
 
     registerHalfMove(){
         halfMoveList.push(this);
-        console.log(halfMoveList);
+    }
+
+    registerFEN(fen: String){
+        FENlist.push(fen);
+    }
+
+    checksThreeFoldRepetition(){
+    
+        let repetitionCount:number = 0;
+        
+        for(let state of FENlist){
+            
+            console.log(FENlist[FENlist.length - 1]);
+            if (state == FENlist[FENlist.length - 1]){
+                repetitionCount += 1;
+            }
+        }
+
+        if(repetitionCount >= 3){
+            window.alert('Tie by Threefold repetition');
+        }
+
     }
 }
 
