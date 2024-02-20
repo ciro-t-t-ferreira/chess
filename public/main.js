@@ -13,6 +13,9 @@ To do:
 Bug:
     -Pawn can advance two pieces over Friendly piece
 
+Usability:
+    -Allow player to drag the piece to the square
+
 Refat:
     -Distribute the code through more files (model, controler, constants)
     -it must be a simpler way of describing the pieces moves in general
@@ -99,13 +102,13 @@ class HalfMove {
     checksThreeFoldRepetition() {
         let repetitionCount = 0;
         for (let state of FENlist) {
-            console.log(FENlist[FENlist.length - 1]);
             if (state == FENlist[FENlist.length - 1]) {
                 repetitionCount += 1;
             }
         }
         if (repetitionCount >= 3) {
-            window.alert('Tie by Threefold repetition');
+            window.alert('Draw by Threefold repetition');
+            gameIsOver = true;
         }
     }
 }
@@ -526,6 +529,7 @@ function movePiece(piece, fromSquare, toSquare) {
     }
 }
 let tableState = [];
+let gameIsOver = false;
 initializeEmptyBoard();
 function initializeEmptyBoard() {
     for (let i = 0; i < 8; i++) {
@@ -650,33 +654,35 @@ function squareClick(id) {
     let square = tableState[column][row];
     let legalSquares = document.getElementsByClassName('legalMove');
     let legalMoveList = [];
-    for (let square of legalSquares) {
-        legalMoveList.push(square.id);
-    }
-    //Clicks piace to play, show legal moves
-    if ((piece === null || piece === void 0 ? void 0 : piece.color) == turn) {
-        eraseAllLegalMoves();
-        showLegalMoves(piece, square);
-        selectedSquare = square;
-        selectedPiece = piece;
-    }
-    //Clicks legal move, executes the move and consequences (refresh stockfish, 
-    //registers en passant, castle etc)
-    else if ((legalMoveList.includes(id)) && (selectedPiece != null)
-        && (selectedSquare != null)) {
-        movePiece(selectedPiece, selectedSquare, square);
-        isEnPassantCapture(square);
-        eraseAllLegalMoves();
-        setPreviousEnPassantStateOff();
-        setEnPassantStateOn(selectedPiece, selectedSquare, square);
-        //affectsCastle(selectedPiece, square);
-        new HalfMove(selectedPiece, selectedSquare, square);
-    }
-    //Clicks adversary piece or empty square, erases legal moves
-    else {
-        selectedSquare = null;
-        selectedPiece = null;
-        eraseAllLegalMoves();
+    if (!gameIsOver) {
+        for (let square of legalSquares) {
+            legalMoveList.push(square.id);
+        }
+        //Clicks piace to play, show legal moves
+        if ((piece === null || piece === void 0 ? void 0 : piece.color) == turn) {
+            eraseAllLegalMoves();
+            showLegalMoves(piece, square);
+            selectedSquare = square;
+            selectedPiece = piece;
+        }
+        //Clicks legal move, executes the move and consequences (refresh stockfish, 
+        //registers en passant, castle etc)
+        else if ((legalMoveList.includes(id)) && (selectedPiece != null)
+            && (selectedSquare != null)) {
+            movePiece(selectedPiece, selectedSquare, square);
+            isEnPassantCapture(square);
+            eraseAllLegalMoves();
+            setPreviousEnPassantStateOff();
+            setEnPassantStateOn(selectedPiece, selectedSquare, square);
+            //affectsCastle(selectedPiece, square);
+            new HalfMove(selectedPiece, selectedSquare, square);
+        }
+        //Clicks adversary piece or empty square, erases legal moves
+        else {
+            selectedSquare = null;
+            selectedPiece = null;
+            eraseAllLegalMoves();
+        }
     }
 }
 //will add the property "subjectToEnPassant = true" to the Square where the piece will be
