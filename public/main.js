@@ -83,6 +83,9 @@ class HalfMove {
         this.fromSquare = fromSquare;
         this.toSquare = toSquare;
         this.registerHalfMove();
+        changeTurn();
+        let fen = generateFEN();
+        makeRequest(fen);
     }
     registerHalfMove() {
         halfMoveList.push(this);
@@ -651,9 +654,6 @@ function squareClick(id) {
         setEnPassantStateOn(selectedPiece, selectedSquare, square);
         //affectsCastle(selectedPiece, square);
         new HalfMove(selectedPiece, selectedSquare, square);
-        changeTurn();
-        let fen = generateFEN(); //move this to the creation of half-moves
-        makeRequest(fen); //move this to the creation of half-moves
     }
     //Clicks adversary piece or empty square, erases legal moves
     else {

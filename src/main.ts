@@ -80,7 +80,7 @@ class Squares{
 }
 
 let halfMoveList: HalfMove[] = [];
-class HalfMove{ //I can refat to centralize all registers here, by simply creating/destroing HalfMoves
+class HalfMove{ 
     public piece      : Piece  ;
     public fromSquare : Squares;
     public toSquare   : Squares;
@@ -90,7 +90,11 @@ class HalfMove{ //I can refat to centralize all registers here, by simply creati
         this.fromSquare = fromSquare;
         this.toSquare   = toSquare  ;
 
-        this.registerHalfMove()
+        this.registerHalfMove();
+        changeTurn();                  
+
+        let fen: string = generateFEN(); 
+        makeRequest(fen); 
     }
 
     registerHalfMove(){
@@ -833,10 +837,6 @@ function squareClick(id: string){
         //affectsCastle(selectedPiece, square);
 
         new HalfMove(selectedPiece, selectedSquare, square);
-        changeTurn();
-
-        let fen: string = generateFEN(); //move this to the creation of half-moves
-        makeRequest(fen);                //move this to the creation of half-moves
     }    
 
     //Clicks adversary piece or empty square, erases legal moves
