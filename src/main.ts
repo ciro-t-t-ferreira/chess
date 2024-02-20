@@ -8,6 +8,9 @@ To do:
     -Put "loading" icon in stockfish suggestions while loading
     -Complete the standard notation for exception cases
 
+Bug: 
+    -Pawn can advance two pieces over Friendly piece
+
 Refat: 
     -Distribute the code through more files (model, controler, constants) 
     -it must be a simpler way of describing the pieces moves in general
@@ -85,15 +88,15 @@ abstract class Piece{
     abstract legalMoves(square:Squares): [number, number][];
 }
 
+let possibleEnPassant: [number, number][] = [] ;        
 class Pawn extends Piece{
     constructor(color: Colors){        
         super(color);
     }
-        
+    
     static legalMoves(square:Squares): [number , number][] { //could be refatored to : Squares[]?
         let legalSquares: [number, number][] = [] ;
         let possibleCaptures: [number, number][] = [] ;
-        let possibleEnPassant: [number, number][] = [] ;        
 
         let colorPiece = square.piece?.color;
         let column = square.column;
@@ -118,10 +121,9 @@ class Pawn extends Piece{
             }
 
             possibleCaptures = this.possibleCaptures(colorPiece, column, row);
+            possibleEnPassant = [];
             possibleEnPassant = this.possibleEnPassant(colorPiece, column, row);
-            console.log(possibleEnPassant);
             legalSquares = legalSquares.concat(possibleCaptures).concat(possibleEnPassant);
-
             
         }
         
@@ -144,8 +146,8 @@ class Pawn extends Piece{
             }
 
             possibleCaptures = this.possibleCaptures(colorPiece, column, row);
+            possibleEnPassant = [];            
             possibleEnPassant = this.possibleEnPassant(colorPiece, column, row);
-            console.log(possibleEnPassant);
             legalSquares = legalSquares.concat(possibleCaptures).concat(possibleEnPassant);
 
         }
@@ -200,14 +202,9 @@ class Pawn extends Piece{
 
     static possibleEnPassant(colorPiece: Colors, column: number, row: number):[number, number][]{
         let enPassantSquares: [number, number][] = []
-        let possibleColumn: number | null = null;
-        let possibleRow: number | null = null;
 
         if ((colorPiece == Colors.white) && (row == 4)){
-            //checa se algum do quadrados vizinhos tem a propriedade true en passant
-            //se tiver, coloca como enPassantSquares o quadrado pro qual a peça pode se mover
-            //remover a peça a ser capturada, quando o jogador escolher fazer en passant, vai 
-                //ser meio chatinho
+            
             if (tableState[column - 1][row].subjectToEnPassant){
                 enPassantSquares.push([column - 1, row + 1])
             }
@@ -618,8 +615,8 @@ function movePiece(piece: Piece, fromSquare: Squares, toSquare: Squares){
 
     if (fromSquare.piece == piece){
         toSquare.createPiece(piece);
-        fromSquare.destructPiece(); //needs to be changed to match the new functions in Square
-        
+        fromSquare.destructPiece(); 
+        //if en passant it needs to also destroy the piece captured
     }
     else{
         throw new Error("Specified piece not found in Square");
@@ -806,11 +803,11 @@ function squareClick(id: string){
         //registers en passant, castle etc)
     else if ((legalMoveList.includes(id)) && (selectedPiece !=null)
         && (selectedSquare != null)){
+
         movePiece(selectedPiece, selectedSquare, square);
-        
+        isEnPassantCapture(square);        
         eraseAllLegalMoves();
 
-        //still need to add En Passant in the list of legal moves for Pawns
         setPreviousEnPassantStateOff();
         setEnPassantStateOn(selectedPiece, selectedSquare, square);
         //affectsCastle(selectedPiece, square);
@@ -861,6 +858,24 @@ function setPreviousEnPassantStateOff(){
         for (let j: number = 0; j < 8; j++){
 
             tableState[i][j].removeEnPassantFromSquare();
+        }
+    }
+}
+
+function isEnPassantCapture(square: Squares){
+    
+    if (possibleEnPassant[0] != null){
+        if ((square.column == possibleEnPassant[0][0]) &&
+        (square.row == possibleEnPassant[0][1])){
+
+            if (square.row == 5){
+                tableState[square.column][square.row - 1].destructPiece();
+            }
+
+            if (square.row == 2){
+                tableState[square.column][square.row + 1].destructPiece();
+            }
+
         }
     }
 }

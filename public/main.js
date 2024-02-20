@@ -9,6 +9,9 @@ To do:
     -Put "loading" icon in stockfish suggestions while loading
     -Complete the standard notation for exception cases
 
+Bug:
+    -Pawn can advance two pieces over Friendly piece
+
 Refat:
     -Distribute the code through more files (model, controler, constants)
     -it must be a simpler way of describing the pieces moves in general
@@ -77,6 +80,7 @@ class Piece {
         this.color = color;
     }
 }
+let possibleEnPassant = [];
 class Pawn extends Piece {
     constructor(color) {
         super(color);
@@ -85,7 +89,6 @@ class Pawn extends Piece {
         var _a;
         let legalSquares = [];
         let possibleCaptures = [];
-        let possibleEnPassant = [];
         let colorPiece = (_a = square.piece) === null || _a === void 0 ? void 0 : _a.color;
         let column = square.column;
         let row = square.row;
@@ -105,8 +108,8 @@ class Pawn extends Piece {
                 }
             }
             possibleCaptures = this.possibleCaptures(colorPiece, column, row);
+            possibleEnPassant = [];
             possibleEnPassant = this.possibleEnPassant(colorPiece, column, row);
-            console.log(possibleEnPassant);
             legalSquares = legalSquares.concat(possibleCaptures).concat(possibleEnPassant);
         }
         if (colorPiece == Colors.black) {
@@ -125,8 +128,8 @@ class Pawn extends Piece {
                 }
             }
             possibleCaptures = this.possibleCaptures(colorPiece, column, row);
+            possibleEnPassant = [];
             possibleEnPassant = this.possibleEnPassant(colorPiece, column, row);
-            console.log(possibleEnPassant);
             legalSquares = legalSquares.concat(possibleCaptures).concat(possibleEnPassant);
         }
         return legalSquares;
@@ -167,13 +170,7 @@ class Pawn extends Piece {
     }
     static possibleEnPassant(colorPiece, column, row) {
         let enPassantSquares = [];
-        let possibleColumn = null;
-        let possibleRow = null;
         if ((colorPiece == Colors.white) && (row == 4)) {
-            //checa se algum do quadrados vizinhos tem a propriedade true en passant
-            //se tiver, coloca como enPassantSquares o quadrado pro qual a peça pode se mover
-            //remover a peça a ser capturada, quando o jogador escolher fazer en passant, vai 
-            //ser meio chatinho
             if (tableState[column - 1][row].subjectToEnPassant) {
                 enPassantSquares.push([column - 1, row + 1]);
             }
@@ -488,7 +485,8 @@ function isACapture(color, column, row) {
 function movePiece(piece, fromSquare, toSquare) {
     if (fromSquare.piece == piece) {
         toSquare.createPiece(piece);
-        fromSquare.destructPiece(); //needs to be changed to match the new functions in Square
+        fromSquare.destructPiece();
+        //if en passant it needs to also destroy the piece captured
     }
     else {
         throw new Error("Specified piece not found in Square");
@@ -634,8 +632,8 @@ function squareClick(id) {
     else if ((legalMoveList.includes(id)) && (selectedPiece != null)
         && (selectedSquare != null)) {
         movePiece(selectedPiece, selectedSquare, square);
+        isEnPassantCapture(square);
         eraseAllLegalMoves();
-        //still need to add En Passant in the list of legal moves for Pawns
         setPreviousEnPassantStateOff();
         setEnPassantStateOn(selectedPiece, selectedSquare, square);
         //affectsCastle(selectedPiece, square);
@@ -670,6 +668,19 @@ function setPreviousEnPassantStateOff() {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
             tableState[i][j].removeEnPassantFromSquare();
+        }
+    }
+}
+function isEnPassantCapture(square) {
+    if (possibleEnPassant[0] != null) {
+        if ((square.column == possibleEnPassant[0][0]) &&
+            (square.row == possibleEnPassant[0][1])) {
+            if (square.row == 5) {
+                tableState[square.column][square.row - 1].destructPiece();
+            }
+            if (square.row == 2) {
+                tableState[square.column][square.row + 1].destructPiece();
+            }
         }
     }
 }
