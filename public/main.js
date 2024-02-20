@@ -54,6 +54,7 @@ class Squares {
         this.column = column;
         this.row = row;
         this.piece = null;
+        this.subjectToEnPassant = false;
     }
     createPiece(piece) {
         removePieceFromBoard(this);
@@ -63,6 +64,12 @@ class Squares {
     destructPiece() {
         this.piece = null;
         removePieceFromBoard(this);
+    }
+    addEnPassantToSquare() {
+        this.subjectToEnPassant = true;
+    }
+    removeEnPassantFromSquare() {
+        this.subjectToEnPassant = false;
     }
 }
 class Piece {
@@ -584,24 +591,56 @@ function squareClick(id) {
     for (let square of legalSquares) {
         legalMoveList.push(square.id);
     }
+    //Clicks piace to play, show legal moves
     if ((piece === null || piece === void 0 ? void 0 : piece.color) == turn) {
         eraseAllLegalMoves();
         showLegalMoves(piece, square);
         selectedSquare = square;
         selectedPiece = piece;
     }
+    //Clicks legal move, executes the move and consequences (refresh stockfish, 
+    //registers en passant, castle etc)
     else if ((legalMoveList.includes(id)) && (selectedPiece != null)
         && (selectedSquare != null)) {
         movePiece(selectedPiece, selectedSquare, square);
         eraseAllLegalMoves();
+        //still need to add En Passant in the list of legal moves for Pawns
+        setPreviousEnPassantStateOff();
+        setEnPassantStateOn(selectedPiece, selectedSquare, square);
+        //affectsCastle(selectedPiece, square);
         changeTurn();
         let fen = generateFEN();
         makeRequest(fen);
     }
+    //Clicks adversary piece or empty square, erases legal moves
     else {
         selectedSquare = null;
         selectedPiece = null;
         eraseAllLegalMoves();
+    }
+}
+//will add the property "subjectToEnPassant = true" to the Square where the piece will be
+//before it passes the turn and before this function is called in the next loop
+//all possible enPassants are erased
+function setEnPassantStateOn(piece, fromSquare, toSquare) {
+    let pieceKind = piece.constructor.name;
+    if (pieceKind == 'Pawn') {
+        if ((piece.color == Colors.white) && (fromSquare.row == 1)
+            && (toSquare.row == 3)) {
+            toSquare.addEnPassantToSquare();
+        }
+        else if ((piece.color == Colors.black) && (fromSquare.row == 6)
+            && (toSquare.row == 4)) {
+            toSquare.addEnPassantToSquare();
+        }
+    }
+}
+function setPreviousEnPassantStateOff() {
+    for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+            console.log(typeof (tableState[i][j]));
+            tableState[i][j].removeEnPassantFromSquare();
+        }
     }
 }
 function changeTurn() {
@@ -711,9 +750,6 @@ function makeRequest(fen) {
             const response = yield fetch(url, options);
             const result = yield response.json();
             fillStockFishSuggestionsOnScreen(result);
-            console.log(result.bestmove);
-            console.log(result.ponder);
-            console.log(result.depth);
         }
         catch (error) {
             console.error(error);
@@ -724,13 +760,10 @@ function fillStockFishSuggestionsOnScreen(result) {
     let bestMove = document.getElementById('bestMove');
     let ponder = document.getElementById('ponder');
     let depth = document.getElementById('depth');
-    console.log(result.position);
     if (bestMove) {
-        console.log('bestMove:' + result.bestmove);
         bestMove.innerHTML = StockFishNotationToStandard(result.bestmove);
     }
     if (ponder) {
-        console.log('ponder:' + result.ponder);
         ponder.innerHTML = StockFishNotationToStandard(result.ponder);
     }
     if (depth) {

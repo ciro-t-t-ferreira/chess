@@ -46,11 +46,13 @@ class Squares{
     public column: number;
     public row: number;
     public piece: Piece | null;
+    public subjectToEnPassant: boolean;
 
     constructor(column: number, row: number){
         this.column = column;
         this.row = row;
         this.piece = null;
+        this.subjectToEnPassant = false;
     }
 
     createPiece(piece: Piece){
@@ -62,6 +64,14 @@ class Squares{
     destructPiece(){
         this.piece = null;
         removePieceFromBoard(this);
+    }
+
+    addEnPassantToSquare(){
+        this.subjectToEnPassant = true;        
+    }
+
+    removeEnPassantFromSquare(){
+        this.subjectToEnPassant = false;
     }
 }
 
@@ -745,6 +755,7 @@ function squareClick(id: string){
         legalMoveList.push(square.id);
     }
     
+    //Clicks piace to play, show legal moves
     if (piece?.color == turn){
         eraseAllLegalMoves();
         showLegalMoves(piece, square);
@@ -752,21 +763,68 @@ function squareClick(id: string){
         selectedPiece = piece;        
     }
 
+    //Clicks legal move, executes the move and consequences (refresh stockfish, 
+        //registers en passant, castle etc)
     else if ((legalMoveList.includes(id)) && (selectedPiece !=null)
         && (selectedSquare != null)){
         movePiece(selectedPiece, selectedSquare, square);
+        
         eraseAllLegalMoves();
+
+        //still need to add En Passant in the list of legal moves for Pawns
+        setPreviousEnPassantStateOff();
+        setEnPassantStateOn(selectedPiece, selectedSquare, square);
+        //affectsCastle(selectedPiece, square);
+
         changeTurn();
+
         let fen: string = generateFEN();
         makeRequest(fen);
     }    
 
+    //Clicks adversary piece or empty square, erases legal moves
     else{
         selectedSquare = null;
         selectedPiece = null;
         eraseAllLegalMoves();
     }
 
+}
+
+//will add the property "subjectToEnPassant = true" to the Square where the piece will be
+//before it passes the turn and before this function is called in the next loop
+//all possible enPassants are erased
+function setEnPassantStateOn(piece: Piece, fromSquare: Squares, toSquare: Squares){
+
+    let pieceKind : string = piece.constructor.name
+    
+    if(pieceKind == 'Pawn'){
+
+        if((piece.color == Colors.white) && (fromSquare.row == 1)
+            && (toSquare.row == 3)){          
+          
+                toSquare.addEnPassantToSquare()
+
+            }
+        
+        
+        else if((piece.color == Colors.black) && (fromSquare.row == 6)
+        && (toSquare.row == 4)){           
+            
+                toSquare.addEnPassantToSquare();
+            
+        }
+    }    
+}
+
+function setPreviousEnPassantStateOff(){
+    for (let i: number = 0; i < 8; i++){   
+        for (let j: number = 0; j < 8; j++){
+            console.log(typeof(tableState[i][j]))
+
+            tableState[i][j].removeEnPassantFromSquare();
+        }
+    }
 }
 
 function changeTurn(){
@@ -899,9 +957,7 @@ async function makeRequest(fen: string){
     	const result = await response.json();
 
         fillStockFishSuggestionsOnScreen(result);
-    	console.log(result.bestmove);
-    	console.log(result.ponder);
-    	console.log(result.depth);
+    	
     } catch (error) {
     	console.error(error);
     }
@@ -913,13 +969,11 @@ function fillStockFishSuggestionsOnScreen(result: any){
     let ponder  : HTMLElement | null = document.getElementById('ponder');
     let depth   : HTMLElement | null = document.getElementById('depth');
         
-    console.log(result.position);
-    if (bestMove) {
-        console.log('bestMove:' + result.bestmove)
+    
+    if (bestMove) {        
         bestMove.innerHTML = StockFishNotationToStandard(result.bestmove);
     }
-    if (ponder) {
-        console.log('ponder:' + result.ponder)
+    if (ponder) {        
         ponder.innerHTML = StockFishNotationToStandard(result.ponder);
     }
     if (depth) {
