@@ -1,8 +1,9 @@
 /*
 To do: 
-    -En passent
     -Castle
     -Check for check
+    -Threefold repetition
+    -Track of moves
     -End game on check mate
     -Put Castle and En passent on FEN
     -Put "loading" icon in stockfish suggestions while loading
@@ -75,6 +76,26 @@ class Squares{
 
     removeEnPassantFromSquare(){
         this.subjectToEnPassant = false;
+    }
+}
+
+let halfMoveList: HalfMove[] = [];
+class HalfMove{ //I can refat to centralize all registers here, by simply creating/destroing HalfMoves
+    public piece      : Piece  ;
+    public fromSquare : Squares;
+    public toSquare   : Squares;
+
+    constructor(piece: Piece, fromSquare: Squares, toSquare: Squares){
+        this.piece      = piece     ;
+        this.fromSquare = fromSquare;
+        this.toSquare   = toSquare  ;
+
+        this.registerHalfMove()
+    }
+
+    registerHalfMove(){
+        halfMoveList.push(this);
+        console.log(halfMoveList);
     }
 }
 
@@ -616,7 +637,6 @@ function movePiece(piece: Piece, fromSquare: Squares, toSquare: Squares){
     if (fromSquare.piece == piece){
         toSquare.createPiece(piece);
         fromSquare.destructPiece(); 
-        //if en passant it needs to also destroy the piece captured
     }
     else{
         throw new Error("Specified piece not found in Square");
@@ -812,10 +832,11 @@ function squareClick(id: string){
         setEnPassantStateOn(selectedPiece, selectedSquare, square);
         //affectsCastle(selectedPiece, square);
 
+        new HalfMove(selectedPiece, selectedSquare, square);
         changeTurn();
 
-        let fen: string = generateFEN();
-        makeRequest(fen);
+        let fen: string = generateFEN(); //move this to the creation of half-moves
+        makeRequest(fen);                //move this to the creation of half-moves
     }    
 
     //Clicks adversary piece or empty square, erases legal moves
@@ -953,6 +974,10 @@ const StandardNotationDictionary: { [key: string]: string } = {
     Queen : 'Q',
     King  : 'K'
 };
+
+function registerMove(piece: Piece, square:Squares){
+
+}
 
 function generateFEN(): string{
     let fen         : string = '';

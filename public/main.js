@@ -1,9 +1,10 @@
 "use strict";
 /*
 To do:
-    -En passent
     -Castle
     -Check for check
+    -Threefold repetition
+    -Track of moves
     -End game on check mate
     -Put Castle and En passent on FEN
     -Put "loading" icon in stockfish suggestions while loading
@@ -73,6 +74,19 @@ class Squares {
     }
     removeEnPassantFromSquare() {
         this.subjectToEnPassant = false;
+    }
+}
+let halfMoveList = [];
+class HalfMove {
+    constructor(piece, fromSquare, toSquare) {
+        this.piece = piece;
+        this.fromSquare = fromSquare;
+        this.toSquare = toSquare;
+        this.registerHalfMove();
+    }
+    registerHalfMove() {
+        halfMoveList.push(this);
+        console.log(halfMoveList);
     }
 }
 class Piece {
@@ -486,7 +500,6 @@ function movePiece(piece, fromSquare, toSquare) {
     if (fromSquare.piece == piece) {
         toSquare.createPiece(piece);
         fromSquare.destructPiece();
-        //if en passant it needs to also destroy the piece captured
     }
     else {
         throw new Error("Specified piece not found in Square");
@@ -637,9 +650,10 @@ function squareClick(id) {
         setPreviousEnPassantStateOff();
         setEnPassantStateOn(selectedPiece, selectedSquare, square);
         //affectsCastle(selectedPiece, square);
+        new HalfMove(selectedPiece, selectedSquare, square);
         changeTurn();
-        let fen = generateFEN();
-        makeRequest(fen);
+        let fen = generateFEN(); //move this to the creation of half-moves
+        makeRequest(fen); //move this to the creation of half-moves
     }
     //Clicks adversary piece or empty square, erases legal moves
     else {
@@ -742,6 +756,8 @@ const StandardNotationDictionary = {
     Queen: 'Q',
     King: 'K'
 };
+function registerMove(piece, square) {
+}
 function generateFEN() {
     var _a, _b;
     let fen = '';
