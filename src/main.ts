@@ -95,6 +95,7 @@ class HalfMove{
         this.toSquare   = toSquare  ;
 
         this.registerHalfMove();
+        this.refreshCastlePrivileges();
         changeTurn();                  
 
         let fen: string = generateFEN();
@@ -128,8 +129,62 @@ class HalfMove{
         }
 
     }
+
+    refreshCastlePrivileges(){
+        
+        if (this.piece.constructor.name == 'King'){
+
+            if (this.piece.color == Colors.white){
+                
+                canWhiteCastleKingSide = false;
+                canWhiteCastleQueenSide = false;
+                
+            }
+            
+            else if (this.piece.color == Colors.black){
+
+                canBlackCastleKingSide = false;
+                canBlackCastleQueenSide = false;
+
+            }
+            
+        }
+
+        if (this.piece.constructor.name == 'Rook'){
+
+            if (this.piece.color == Colors.white){
+                
+                if (this.fromSquare.column == 0){
+                    canWhiteCastleQueenSide = false;
+                }
+                
+                if (this.fromSquare.column == 7){
+                    canWhiteCastleKingSide = false;                   
+                }
+
+            }
+            
+            else if (this.piece.color == Colors.black){
+
+                if (this.fromSquare.column == 0){
+                    canBlackCastleQueenSide = false;
+                }
+                
+                if (this.fromSquare.column == 7){
+                    canBlackCastleKingSide = false;
+                }
+
+            }
+
+        }
+
+    }
 }
 
+let canWhiteCastleQueenSide: boolean = true;
+let canWhiteCastleKingSide : boolean = true;
+let canBlackCastleQueenSide: boolean = true;
+let canBlackCastleKingSide : boolean = true;
 abstract class Piece{
     public color:Colors;
 
@@ -1012,6 +1067,7 @@ function generateFEN(): string{
     let fen         : string = '';
     let emptySquares: number = 0;
     
+    //piece placement
     for (let i = 7 ; i >= 0 ; i--){
         for (let j = 0 ; j <= 7 ; j++){
             let kind : string | undefined = (tableState[j][i].piece)?.constructor.name;
@@ -1034,12 +1090,37 @@ function generateFEN(): string{
         (i != 0)? (fen = fen + '/') : undefined;
     }
 
+    //turn
     if (turn == 0){
         fen = fen + ' w';
     }
     else{
         fen = fen + ' b';
     }
+
+    //Castling Rights 
+
+    let castlingRightsField:string = '';
+
+    canWhiteCastleKingSide  ? castlingRightsField = castlingRightsField.concat('K') : castlingRightsField;
+    canWhiteCastleQueenSide ? castlingRightsField = castlingRightsField.concat('Q') : castlingRightsField;
+    canBlackCastleKingSide  ? castlingRightsField = castlingRightsField.concat('k') : castlingRightsField;
+    canBlackCastleQueenSide ? castlingRightsField = castlingRightsField.concat('q') : castlingRightsField;
+
+    if ((!canWhiteCastleKingSide) && (!canWhiteCastleQueenSide) && (!canBlackCastleKingSide) &&
+        (!canBlackCastleQueenSide)){
+        castlingRightsField = '-';
+    }
+
+    fen = fen + ' ' + castlingRightsField;
+    console.log(fen)
+
+
+    //Possible En Passant Targets
+
+    //Half Move Clock
+
+    //Full Move Number
 
     return fen
 }
