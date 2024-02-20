@@ -5,7 +5,7 @@ To do:
     -Threefold repetition
     -Track of moves
     -End game on check mate
-    -Put Castle and En passent on FEN
+    -Put Castle and En passant on FEN
     -Put "loading" icon in stockfish suggestions while loading
     -Complete the standard notation for exception cases
 
@@ -49,6 +49,7 @@ enum Colors{
     'black'
 }
 
+let enPassantTarget: Squares | null = null;
 class Squares{
     public column: number;
     public row: number;
@@ -74,7 +75,8 @@ class Squares{
     }
 
     addEnPassantToSquare(){
-        this.subjectToEnPassant = true;        
+        this.subjectToEnPassant = true;
+        enPassantTarget = this;
     }
 
     removeEnPassantFromSquare(){
@@ -82,8 +84,8 @@ class Squares{
     }
 }
 
-let halfMoveList: HalfMove[] = [];
-let FENlist: String[] = [];
+let halfMoveList : HalfMove[] = [];
+let FENlist      : String[] = [];
 class HalfMove{ 
     public piece      : Piece  ;
     public fromSquare : Squares;
@@ -95,9 +97,9 @@ class HalfMove{
         this.toSquare   = toSquare  ;
 
         this.registerHalfMove();
-        this.refreshCastlePrivileges();
+        this.refreshCastleRights();
         changeTurn();                  
-
+        
         let fen: string = generateFEN();
         this.registerFEN(fen);
         this.checksThreeFoldRepetition(); 
@@ -130,7 +132,7 @@ class HalfMove{
 
     }
 
-    refreshCastlePrivileges(){
+    refreshCastleRights(){
         
         if (this.piece.constructor.name == 'King'){
 
@@ -916,9 +918,8 @@ function squareClick(id: string){
             isEnPassantCapture(square);        
             eraseAllLegalMoves();
 
-            setPreviousEnPassantStateOff();
+            setPreviousEnPassantStateOff();            
             setEnPassantStateOn(selectedPiece, selectedSquare, square);
-            //affectsCastle(selectedPiece, square);
 
             new HalfMove(selectedPiece, selectedSquare, square);
         }    
@@ -965,6 +966,7 @@ function setPreviousEnPassantStateOff(){
             tableState[i][j].removeEnPassantFromSquare();
         }
     }
+    enPassantTarget = null;
 }
 
 function isEnPassantCapture(square: Squares){
@@ -1099,8 +1101,7 @@ function generateFEN(): string{
     }
 
     //Castling Rights 
-
-    let castlingRightsField:string = '';
+    let castlingRightsField: string = '';
 
     canWhiteCastleKingSide  ? castlingRightsField = castlingRightsField.concat('K') : castlingRightsField;
     canWhiteCastleQueenSide ? castlingRightsField = castlingRightsField.concat('Q') : castlingRightsField;
@@ -1113,10 +1114,25 @@ function generateFEN(): string{
     }
 
     fen = fen + ' ' + castlingRightsField;
-    console.log(fen)
-
 
     //Possible En Passant Targets
+    let enPassantField: string = '';
+    
+    if (enPassantTarget == null){
+        enPassantField = '-'
+    }
+    
+    else if (enPassantTarget.row == 3){
+        enPassantField = enPassantField.concat(columnDictionary[enPassantTarget.column]);
+        enPassantField = enPassantField.concat((enPassantTarget.row).toString());
+    }
+
+    else if (enPassantTarget.row == 4){
+        enPassantField = enPassantField.concat(columnDictionary[enPassantTarget.column]);
+        enPassantField = enPassantField.concat((enPassantTarget.row + 2).toString());
+    }
+    
+    fen = fen + ' ' + enPassantField;
 
     //Half Move Clock
 

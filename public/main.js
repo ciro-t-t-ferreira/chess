@@ -6,7 +6,7 @@ To do:
     -Threefold repetition
     -Track of moves
     -End game on check mate
-    -Put Castle and En passent on FEN
+    -Put Castle and En passant on FEN
     -Put "loading" icon in stockfish suggestions while loading
     -Complete the standard notation for exception cases
 
@@ -56,6 +56,7 @@ var Colors;
     Colors[Colors["white"] = 0] = "white";
     Colors[Colors["black"] = 1] = "black";
 })(Colors || (Colors = {}));
+let enPassantTarget = null;
 class Squares {
     constructor(column, row) {
         this.column = column;
@@ -74,6 +75,7 @@ class Squares {
     }
     addEnPassantToSquare() {
         this.subjectToEnPassant = true;
+        enPassantTarget = this;
     }
     removeEnPassantFromSquare() {
         this.subjectToEnPassant = false;
@@ -87,7 +89,7 @@ class HalfMove {
         this.fromSquare = fromSquare;
         this.toSquare = toSquare;
         this.registerHalfMove();
-        this.refreshCastlePrivileges();
+        this.refreshCastleRights();
         changeTurn();
         let fen = generateFEN();
         this.registerFEN(fen);
@@ -112,7 +114,7 @@ class HalfMove {
             gameIsOver = true;
         }
     }
-    refreshCastlePrivileges() {
+    refreshCastleRights() {
         if (this.piece.constructor.name == 'King') {
             if (this.piece.color == Colors.white) {
                 canWhiteCastleKingSide = false;
@@ -709,7 +711,6 @@ function squareClick(id) {
             eraseAllLegalMoves();
             setPreviousEnPassantStateOff();
             setEnPassantStateOn(selectedPiece, selectedSquare, square);
-            //affectsCastle(selectedPiece, square);
             new HalfMove(selectedPiece, selectedSquare, square);
         }
         //Clicks adversary piece or empty square, erases legal moves
@@ -742,6 +743,7 @@ function setPreviousEnPassantStateOff() {
             tableState[i][j].removeEnPassantFromSquare();
         }
     }
+    enPassantTarget = null;
 }
 function isEnPassantCapture(square) {
     if (possibleEnPassant[0] != null) {
@@ -857,8 +859,20 @@ function generateFEN() {
         castlingRightsField = '-';
     }
     fen = fen + ' ' + castlingRightsField;
-    console.log(fen);
     //Possible En Passant Targets
+    let enPassantField = '';
+    if (enPassantTarget == null) {
+        enPassantField = '-';
+    }
+    else if (enPassantTarget.row == 3) {
+        enPassantField = enPassantField.concat(columnDictionary[enPassantTarget.column]);
+        enPassantField = enPassantField.concat((enPassantTarget.row).toString());
+    }
+    else if (enPassantTarget.row == 4) {
+        enPassantField = enPassantField.concat(columnDictionary[enPassantTarget.column]);
+        enPassantField = enPassantField.concat((enPassantTarget.row + 2).toString());
+    }
+    fen = fen + ' ' + enPassantField;
     //Half Move Clock
     //Full Move Number
     return fen;
