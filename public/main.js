@@ -85,6 +85,7 @@ class Pawn extends Piece {
         var _a;
         let legalSquares = [];
         let possibleCaptures = [];
+        let possibleEnPassant = [];
         let colorPiece = (_a = square.piece) === null || _a === void 0 ? void 0 : _a.color;
         let column = square.column;
         let row = square.row;
@@ -104,7 +105,9 @@ class Pawn extends Piece {
                 }
             }
             possibleCaptures = this.possibleCaptures(colorPiece, column, row);
-            legalSquares = legalSquares.concat(possibleCaptures);
+            possibleEnPassant = this.possibleEnPassant(colorPiece, column, row);
+            console.log(possibleEnPassant);
+            legalSquares = legalSquares.concat(possibleCaptures).concat(possibleEnPassant);
         }
         if (colorPiece == Colors.black) {
             if (row == 6) {
@@ -122,7 +125,9 @@ class Pawn extends Piece {
                 }
             }
             possibleCaptures = this.possibleCaptures(colorPiece, column, row);
-            legalSquares = legalSquares.concat(possibleCaptures);
+            possibleEnPassant = this.possibleEnPassant(colorPiece, column, row);
+            console.log(possibleEnPassant);
+            legalSquares = legalSquares.concat(possibleCaptures).concat(possibleEnPassant);
         }
         return legalSquares;
     }
@@ -159,6 +164,32 @@ class Pawn extends Piece {
             }
             return captureSquares;
         }
+    }
+    static possibleEnPassant(colorPiece, column, row) {
+        let enPassantSquares = [];
+        let possibleColumn = null;
+        let possibleRow = null;
+        if ((colorPiece == Colors.white) && (row == 4)) {
+            //checa se algum do quadrados vizinhos tem a propriedade true en passant
+            //se tiver, coloca como enPassantSquares o quadrado pro qual a peça pode se mover
+            //remover a peça a ser capturada, quando o jogador escolher fazer en passant, vai 
+            //ser meio chatinho
+            if (tableState[column - 1][row].subjectToEnPassant) {
+                enPassantSquares.push([column - 1, row + 1]);
+            }
+            else if (tableState[column + 1][row].subjectToEnPassant) {
+                enPassantSquares.push([column + 1, row + 1]);
+            }
+        }
+        else if ((colorPiece == Colors.black) && (row == 3)) {
+            if (tableState[column - 1][row].subjectToEnPassant) {
+                enPassantSquares.push([column - 1, row - 1]);
+            }
+            else if (tableState[column + 1][row].subjectToEnPassant) {
+                enPassantSquares.push([column + 1, row - 1]);
+            }
+        }
+        return enPassantSquares;
     }
 }
 class Knight extends Piece {
@@ -638,7 +669,6 @@ function setEnPassantStateOn(piece, fromSquare, toSquare) {
 function setPreviousEnPassantStateOff() {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            console.log(typeof (tableState[i][j]));
             tableState[i][j].removeEnPassantFromSquare();
         }
     }
