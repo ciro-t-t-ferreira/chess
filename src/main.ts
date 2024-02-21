@@ -69,7 +69,7 @@ class Squares{
         addPieceOnBoard(piece, this);
     }
 
-    destructPiece(){
+    destroyPiece(){
         this.piece = null;
         removePieceFromBoard(this);
     }
@@ -84,8 +84,9 @@ class Squares{
     }
 }
 
-let halfMoveList : HalfMove[] = [];
-let FENlist      : String[] = [];
+let halfMoveList  : HalfMove[] = [];
+let FENlist       : String[] = [];
+let halfMoveClock : number = 0;
 class HalfMove{ 
     public piece      : Piece  ;
     public fromSquare : Squares;
@@ -97,12 +98,15 @@ class HalfMove{
         this.toSquare   = toSquare  ;
 
         this.registerHalfMove();
+        halfMoveClock += 1;
+        this.resetsHalfMoveClockIfPawnMove();
         this.refreshCastleRights();
         changeTurn();                  
         
         let fen: string = generateFEN();
         this.registerFEN(fen);
-        this.checksThreeFoldRepetition(); 
+        this.checksThreeFoldRepetition();
+        this.checks50MoveRule(); 
         makeRequest(fen); 
     }
 
@@ -178,8 +182,27 @@ class HalfMove{
 
             }
 
-        }
+        }      
+    }
 
+    resetsHalfMoveClockIfPawnMove(){
+        if (this.piece.constructor.name == 'Pawn'){
+            halfMoveClock = 0;
+        }
+    }
+
+    static resetsHalfMoveClockIfCapture(toSquare: Squares){
+        console.log(toSquare.piece)
+        if (toSquare.piece != null){
+            halfMoveClock = 0;
+        }
+    }
+
+    checks50MoveRule(){
+        if (halfMoveClock >= 100){
+            gameIsOver = true;
+            window.alert('Draw by 50 move rule');
+        }
     }
 }
 
@@ -723,8 +746,9 @@ function isACapture(color: Colors | undefined, column: number, row: number): boo
 function movePiece(piece: Piece, fromSquare: Squares, toSquare: Squares){
 
     if (fromSquare.piece == piece){
+        HalfMove.resetsHalfMoveClockIfCapture(toSquare);
         toSquare.createPiece(piece);
-        fromSquare.destructPiece(); 
+        fromSquare.destroyPiece(); 
     }
     else{
         throw new Error("Specified piece not found in Square");
@@ -976,11 +1000,11 @@ function isEnPassantCapture(square: Squares){
         (square.row == possibleEnPassant[0][1])){
 
             if (square.row == 5){
-                tableState[square.column][square.row - 1].destructPiece();
+                tableState[square.column][square.row - 1].destroyPiece();
             }
 
             if (square.row == 2){
-                tableState[square.column][square.row + 1].destructPiece();
+                tableState[square.column][square.row + 1].destroyPiece();
             }
 
         }
@@ -1135,6 +1159,8 @@ function generateFEN(): string{
     fen = fen + ' ' + enPassantField;
 
     //Half Move Clock
+
+    fen = fen + ' ' + halfMoveClock;
 
     //Full Move Number
 
