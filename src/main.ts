@@ -87,6 +87,7 @@ class Squares{
 let halfMoveList  : HalfMove[] = [];
 let FENlist       : String[] = [];
 let halfMoveClock : number = 0;
+let fullMoveClock : number = 1;
 class HalfMove{ 
     public piece      : Piece  ;
     public fromSquare : Squares;
@@ -107,6 +108,7 @@ class HalfMove{
         this.registerFEN(fen);
         this.checksThreeFoldRepetition();
         this.checks50MoveRule(); 
+        this.refreshFullMoveClock();
         makeRequest(fen); 
     }
 
@@ -192,7 +194,6 @@ class HalfMove{
     }
 
     static resetsHalfMoveClockIfCapture(toSquare: Squares){
-        console.log(toSquare.piece)
         if (toSquare.piece != null){
             halfMoveClock = 0;
         }
@@ -202,6 +203,12 @@ class HalfMove{
         if (halfMoveClock >= 100){
             gameIsOver = true;
             window.alert('Draw by 50 move rule');
+        }
+    }
+
+    refreshFullMoveClock(){
+        if (this.piece.color == Colors.black){
+            fullMoveClock += 1;
         }
     }
 }
@@ -746,9 +753,11 @@ function isACapture(color: Colors | undefined, column: number, row: number): boo
 function movePiece(piece: Piece, fromSquare: Squares, toSquare: Squares){
 
     if (fromSquare.piece == piece){
+        
         HalfMove.resetsHalfMoveClockIfCapture(toSquare);
         toSquare.createPiece(piece);
-        fromSquare.destroyPiece(); 
+        fromSquare.destroyPiece();     
+        
     }
     else{
         throw new Error("Specified piece not found in Square");
@@ -1163,7 +1172,9 @@ function generateFEN(): string{
     fen = fen + ' ' + halfMoveClock;
 
     //Full Move Number
-
+    
+    fen = fen + ' ' + fullMoveClock;
+    console.log(fen);
     return fen
 }
 

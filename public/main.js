@@ -84,6 +84,7 @@ class Squares {
 let halfMoveList = [];
 let FENlist = [];
 let halfMoveClock = 0;
+let fullMoveClock = 1;
 class HalfMove {
     constructor(piece, fromSquare, toSquare) {
         this.piece = piece;
@@ -98,6 +99,7 @@ class HalfMove {
         this.registerFEN(fen);
         this.checksThreeFoldRepetition();
         this.checks50MoveRule();
+        this.refreshFullMoveClock();
         makeRequest(fen);
     }
     registerHalfMove() {
@@ -154,7 +156,6 @@ class HalfMove {
         }
     }
     static resetsHalfMoveClockIfCapture(toSquare) {
-        console.log(toSquare.piece);
         if (toSquare.piece != null) {
             halfMoveClock = 0;
         }
@@ -163,6 +164,11 @@ class HalfMove {
         if (halfMoveClock >= 100) {
             gameIsOver = true;
             window.alert('Draw by 50 move rule');
+        }
+    }
+    refreshFullMoveClock() {
+        if (this.piece.color == Colors.black) {
+            fullMoveClock += 1;
         }
     }
 }
@@ -898,6 +904,8 @@ function generateFEN() {
     //Half Move Clock
     fen = fen + ' ' + halfMoveClock;
     //Full Move Number
+    fen = fen + ' ' + fullMoveClock;
+    console.log(fen);
     return fen;
 }
 //request to the API
