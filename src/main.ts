@@ -2,10 +2,7 @@
 To do: 
     -Castle
     -Check for check
-    -Threefold repetition
-    -Track of moves
     -End game on check mate
-    -Put Castle and En passant on FEN
     -Put "loading" icon in stockfish suggestions while loading
     -Complete the standard notation for exception cases
 
@@ -248,7 +245,7 @@ class Pawn extends Piece{
                     legalSquares.push([column, row + 1]);
                 }
                 if ((tableState[column][row + 1].piece == null) &&
-                    ((tableState[column][row + 1].piece == null)))
+                    ((tableState[column][row + 2].piece == null)))
                 legalSquares.push([column, row + 2]);
             }
 
@@ -273,7 +270,7 @@ class Pawn extends Piece{
                     legalSquares.push([column, row - 1]);
                 }
                 if ((tableState[column][row - 1].piece == null) &&
-                    ((tableState[column][row - 1].piece == null)))
+                    ((tableState[column][row - 2].piece == null)))
                 legalSquares.push([column, row - 2]);
             }
 
