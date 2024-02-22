@@ -7,11 +7,9 @@ To do:
     -Put "loading" icon in stockfish suggestions while loading
     -Complete the standard notation for exception cases
 
-Bug:
-    -Pawn can advance two pieces over Friendly piece
-
 Usability:
     -Allow player to drag the piece to the square
+    -Creat keyboard shortcut to write the standard notation to make the move
 
 Refat:
     -Distribute the code through more files (model, controler, constants)
@@ -230,6 +228,7 @@ class Pawn extends Piece {
             possibleEnPassant = this.possibleEnPassant(colorPiece, column, row);
             legalSquares = legalSquares.concat(possibleCaptures).concat(possibleEnPassant);
         }
+        //removesSelfChecksFromLegalMoves(legalSquares, square)
         return legalSquares;
     }
     legalMoves(square) {
@@ -578,6 +577,58 @@ function isACapture(color, column, row) {
     }
     return false;
 }
+/*
+let sampleLegalMoves : [number, number][]=[[0,2],[0,3]];
+let sampleFromSquare : Squares = new Squares(0,1);
+let samplePawn       : Piece = new Pawn(Colors.white)
+sampleFromSquare.createPiece(samplePawn)
+
+removesSelfChecksFromLegalMoves(sampleLegalMoves, sampleFromSquare)
+*/
+function removesSelfChecksFromLegalMoves(legalMoves, fromSquare) {
+    let kingSquare = findsKing();
+    let mockBoard = createsCopyOfTableState();
+    mockBoard[fromSquare.column][fromSquare.row].piece = null;
+    for (let legalMove of legalMoves) {
+        let originalPiece = mockBoard[legalMove[0]][legalMove[1]].piece;
+        let pieceToRestore = originalPiece ? new Bishop(originalPiece.color) : null;
+        mockBoard[legalMove[0]][legalMove[1]].piece = new Bishop(turn);
+        console.log(legalMove[0]);
+        console.log(legalMove[1]);
+        console.log(mockBoard[legalMove[0]][legalMove[1]]);
+        console.log(mockBoard);
+        //checks if king could attack enemy piece of kind x using x legal moves
+        //mockBoard[legalMove[0]][legalMove[1]].piece = originalPiece;
+        //ok, it is a reference issue, every time I do the above it erases the piece on
+        //this place of mockBoard.
+        //Need to understand this better
+    }
+}
+function createsCopyOfTableState() {
+    let mockBoard = [];
+    for (let i = 0; i <= 7; i++) {
+        mockBoard[i] = [];
+        for (let j = 0; j <= 7; j++) {
+            mockBoard[i][j] = new Squares(i, j);
+            mockBoard[i][j].piece = tableState[i][j].piece;
+        }
+    }
+    return mockBoard;
+}
+function findsKing() {
+    var _a, _b;
+    let kingSquare = [];
+    for (let i = 0; i <= 7; i++) {
+        for (let j = 0; j <= 7; j++) {
+            if ((((_a = tableState[i][j].piece) === null || _a === void 0 ? void 0 : _a.color) == turn) &&
+                (((_b = tableState[i][j].piece) === null || _b === void 0 ? void 0 : _b.constructor.name) == 'King')) {
+                kingSquare = [i, j];
+                break;
+            }
+        }
+    }
+    return kingSquare;
+}
 //Responsible for verifying if there is a Piece in the square to be moved,
 //and for making sure that a piece will disapear in a square and apear in another
 function movePiece(piece, fromSquare, toSquare) {
@@ -902,7 +953,6 @@ function generateFEN() {
     fen = fen + ' ' + halfMoveClock;
     //Full Move Number
     fen = fen + ' ' + fullMoveClock;
-    console.log(fen);
     return fen;
 }
 //request to the API
@@ -956,3 +1006,8 @@ function StockFishNotationToStandard(sfnotation) {
     }
     return notation;
 }
+let sampleLegalMoves = [[0, 2], [0, 3]];
+let sampleFromSquare = new Squares(0, 1);
+let samplePawn = new Pawn(Colors.white);
+sampleFromSquare.createPiece(samplePawn);
+removesSelfChecksFromLegalMoves(sampleLegalMoves, sampleFromSquare);
